@@ -1,1 +1,1 @@
-import h from "@macrostrat/hyper";
+export * from "./table";
