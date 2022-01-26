@@ -1,6 +1,6 @@
 import h from "@macrostrat/hyper";
 import pg, { usePostgrest, Row, UnitsView } from "../../src";
-import { BasePage } from "../../src";
+import { BasePage, Table } from "../../src";
 import { useRouter } from "next/router";
 import { Spinner } from "@blueprintjs/core";
 
@@ -30,34 +30,26 @@ function Units() {
   if (!units) return h(Spinner);
   return h(BasePage, { query: router.query }, [
     h("h3", ["Units"]),
-    h("div.table-container", [
-      h(
-        "table.bp3-html-table .bp3-html-table-bordered .bp3-interactive",
-        { style: { width: "100%" } },
-        [
-          h("thead", [
-            h("tr", [
-              headers.map((head, i) => {
-                return h("th", { key: i }, [head]);
-              }),
-            ]),
-          ]),
-          h("tbody", [
-            units.map((unit, i) => {
-              return h(Row, { key: i, onClick: () => onClick(unit) }, [
-                h("td", [unit.id]),
-                h("td", [unit.strat_name]),
-                h("td", [unit.name_fo]),
-                h("td", [unit.name_lo]),
-                h("td", { style: { backgroundColor: unit.color } }, [
-                  unit.color,
-                ]),
-                h("td", [`${unit.min_thick} - ${unit.max_thick}`]),
-              ]);
-            }),
-          ]),
-        ]
-      ),
+    h(Table, { interactive: true }, [
+      h("thead", [
+        h("tr", [
+          headers.map((head, i) => {
+            return h("th", { key: i }, [head]);
+          }),
+        ]),
+      ]),
+      h("tbody", [
+        units.map((unit, i) => {
+          return h(Row, { key: i, onClick: () => onClick(unit) }, [
+            h("td", [unit.id]),
+            h("td", [unit.strat_name]),
+            h("td", [unit.name_fo]),
+            h("td", [unit.name_lo]),
+            h("td", { style: { backgroundColor: unit.color } }, [unit.color]),
+            h("td", [`${unit.min_thick} - ${unit.max_thick}`]),
+          ]);
+        }),
+      ]),
     ]),
   ]);
 }

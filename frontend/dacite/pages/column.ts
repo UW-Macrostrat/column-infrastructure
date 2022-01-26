@@ -1,6 +1,6 @@
 import h from "@macrostrat/hyper";
 import { useRouter } from "next/router";
-import pg, { usePostgrest, IColumnSection, Row, BasePage } from "../src";
+import pg, { usePostgrest, IColumnSection, Row, BasePage, Table } from "../src";
 
 function dataPreProcess(col_id: any) {
   const colSections: IColumnSection[] = usePostgrest(
@@ -63,30 +63,24 @@ export default function ColumnGroup() {
   };
   return h(BasePage, { query: router.query }, [
     h("h3", [`Sections for ${col_name}`]),
-    h("div.table-container", [
-      h(
-        "table.bp3-html-table .bp3-html-table-bordered .bp3-interactive",
-        { style: { width: "100%" } },
-        [
-          h("thead", [
-            h("tr", [
-              headers.map((head, i) => {
-                return h("th", { key: i }, [head]);
-              }),
-            ]),
-          ]),
-          h("tbody", [
-            data.map((col, i) => {
-              return h(Row, { key: i, onClick: () => onClick(col) }, [
-                h("td", [col.section_id]),
-                h("td", [col.top]),
-                h("td", [col.bottom]),
-                h("td", [h("a", `view ${col.units} units`)]),
-              ]);
-            }),
-          ]),
-        ]
-      ),
+    h(Table, { interactive: true }, [
+      h("thead", [
+        h("tr", [
+          headers.map((head, i) => {
+            return h("th", { key: i }, [head]);
+          }),
+        ]),
+      ]),
+      h("tbody", [
+        data.map((col, i) => {
+          return h(Row, { key: i, onClick: () => onClick(col) }, [
+            h("td", [col.section_id]),
+            h("td", [col.top]),
+            h("td", [col.bottom]),
+            h("td", [h("a", `view ${col.units} units`)]),
+          ]);
+        }),
+      ]),
     ]),
   ]);
 }

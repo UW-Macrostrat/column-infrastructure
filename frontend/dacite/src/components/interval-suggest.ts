@@ -43,7 +43,7 @@ function IntervalSuggest(props: IntervalSuggestProps) {
   const onItemSelect = (item: IntervalI) => {
     props.onChange(item);
   };
-
+  //@ts-ignore
   return h(InterSuggest, {
     inputValueRenderer: (item: IntervalI) => item.interval_name,
     items: itemz,

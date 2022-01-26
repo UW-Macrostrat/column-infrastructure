@@ -1,5 +1,5 @@
 import h from "@macrostrat/hyper";
-import pg, { usePostgrest, Row, Project, BasePage } from "../src";
+import pg, { usePostgrest, Row, Project, BasePage, Table } from "../src";
 import { useRouter } from "next/router";
 import { Button } from "@blueprintjs/core";
 
@@ -19,25 +19,23 @@ function Home() {
       "Choose a Project",
       h(Button, { minimal: true, intent: "success" }, ["Create New Project"]),
     ]),
-    h("div.table-container", [
-      h("table.bp3-html-table .bp3-html-table-bordered .bp3-interactive", [
-        h("thead", [
-          h("tr", [
-            headers.map((head, i) => {
-              return h("th", { key: i }, [head]);
-            }),
-          ]),
-        ]),
-        h("tbody", [
-          projects.map((project, i) => {
-            return h(Row, { key: i, onClick: () => onClick(project) }, [
-              h("td", [project.id]),
-              h("td", [project.project]),
-              h("td", [project.descrip]),
-              h("td", [project.timescale_id]),
-            ]);
+    h(Table, { interactive: true }, [
+      h("thead", [
+        h("tr", [
+          headers.map((head, i) => {
+            return h("th", { key: i }, [head]);
           }),
         ]),
+      ]),
+      h("tbody", [
+        projects.map((project, i) => {
+          return h(Row, { key: i, onClick: () => onClick(project) }, [
+            h("td", [project.id]),
+            h("td", [project.project]),
+            h("td", [project.descrip]),
+            h("td", [project.timescale_id]),
+          ]);
+        }),
       ]),
     ]),
   ]);

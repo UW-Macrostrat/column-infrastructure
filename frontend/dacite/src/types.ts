@@ -34,7 +34,7 @@ export interface UnitsView {
   id: number;
   strat_name: string;
   color: string;
-  outcrop: string;
+  outcrop?: string;
   fo?: number;
   name_fo: string;
   age_bottom: number;

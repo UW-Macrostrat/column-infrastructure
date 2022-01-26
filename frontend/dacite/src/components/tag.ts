@@ -1,7 +1,6 @@
 import { hyperStyled } from "@macrostrat/hyper";
 import { Tooltip2 as Tooltip } from "@blueprintjs/popover2";
 import { Tag } from "@blueprintjs/core";
-//@ts-ignore
 import styles from "./comp.module.scss";
 
 const h = hyperStyled(styles);
