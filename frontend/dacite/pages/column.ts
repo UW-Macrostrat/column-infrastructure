@@ -1,10 +1,9 @@
-import { Button } from "@blueprintjs/core";
 import h from "@macrostrat/hyper";
 import { useRouter } from "next/router";
-import pg, { usePostgrest, ColumnI, Row } from "../src";
+import pg, { usePostgrest, IColumnSection, Row, BasePage } from "../src";
 
 function dataPreProcess(col_id: any) {
-  const colSections: ColumnI[] = usePostgrest(
+  const colSections: IColumnSection[] = usePostgrest(
     pg
       .from("col_sections")
       .select()
@@ -51,9 +50,7 @@ export default function ColumnGroup() {
   const { col_id, project_id } = router.query;
   if (!col_id) return h("div");
 
-  const { data, col_name }: { data: any; col_name: string } = dataPreProcess(
-    col_id
-  );
+  const { data, col_name } = dataPreProcess(col_id);
 
   if (!data) return h("div");
 
@@ -64,7 +61,7 @@ export default function ColumnGroup() {
       `/units?project_id=${project_id}&col_id=${col_id}&section_id=${col.section_id}`
     );
   };
-  return h("div", [
+  return h(BasePage, { query: router.query }, [
     h("h3", [`Sections for ${col_name}`]),
     h("div.table-container", [
       h(
@@ -82,8 +79,8 @@ export default function ColumnGroup() {
             data.map((col, i) => {
               return h(Row, { key: i, onClick: () => onClick(col) }, [
                 h("td", [col.section_id]),
-                h("td", [col.bottom]),
                 h("td", [col.top]),
+                h("td", [col.bottom]),
                 h("td", [h("a", `view ${col.units} units`)]),
               ]);
             }),

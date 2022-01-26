@@ -1,5 +1,5 @@
 import h from "@macrostrat/hyper";
-import pg, { usePostgrest, Row, Project } from "../src";
+import pg, { usePostgrest, Row, Project, BasePage } from "../src";
 import { useRouter } from "next/router";
 import { Button } from "@blueprintjs/core";
 
@@ -14,7 +14,7 @@ function Home() {
 
   const headers = Object.keys(projects[0]);
 
-  return h("div", [
+  return h(BasePage, { query: {} }, [
     h("h3,", [
       "Choose a Project",
       h(Button, { minimal: true, intent: "success" }, ["Create New Project"]),

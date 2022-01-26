@@ -1,7 +1,7 @@
 import { Button } from "@blueprintjs/core";
 import h from "@macrostrat/hyper";
 import { useRouter } from "next/router";
-import pg, { usePostgrest, Project, ColumnGroupI, Row } from "../src";
+import pg, { usePostgrest, Project, ColumnGroupI, Row, BasePage } from "../src";
 
 export default function ColumnGroup() {
   const router = useRouter();
@@ -27,34 +27,48 @@ export default function ColumnGroup() {
   const onClick = (col_id: number) => {
     router.push(`/column?project_id=${project_id}&col_id=${col_id}`);
   };
-  return h("div", [
+  return h(BasePage, { query: router.query }, [
     h("h3", [
       project.project,
       h(Button, { minimal: true, intent: "success" }, ["Add New Group"]),
     ]),
     h("div", { style: { display: "flex", flexWrap: "wrap" } }, [
       columnGroups.map((colGroup, i) => {
-        return h("div.table-container", { style: { margin: "10px" } }, [
-          h(
-            "table.bp3-html-table .bp3-html-table-bordered .bp3-interactive .bp3-html-table-condensed",
-            { key: i },
-            [
-              h("thead", [
-                h("tr", [h("td", colGroup.col_group_long)]),
-                h("tr", [h("td", "Column ID")]),
-              ]),
-              h("tbody", [
-                colGroup.col_ids.map((id, i) => {
-                  return h(Row, { key: i, onClick: () => onClick(id) }, [
-                    h("td", [id]),
-                  ]);
-                }),
-                h(Button, { fill: true, minimal: true, intent: "success" }, [
-                  "Add New Column",
+        return h("div", { style: { textAlign: "center", height: "100%" } }, [
+          h("h3", { style: { margine: 0 } }, colGroup.col_group_long),
+          h("div.table-container", { key: i, style: { margin: "10px" } }, [
+            h(
+              "table.bp3-html-table .bp3-html-table-bordered .bp3-interactive .bp3-html-table-condensed",
+              { key: i },
+              [
+                h("thead", [
+                  h("tr", [
+                    h("td", "ID"),
+                    h("td", "Name"),
+                    h("td", "Col #"),
+                    h("td", "Status"),
+                  ]),
                 ]),
-              ]),
-            ]
-          ),
+                h("tbody", [
+                  colGroup.cols.map((id, i) => {
+                    return h(
+                      Row,
+                      { key: i, onClick: () => onClick(id.col_id) },
+                      [
+                        h("td", [id.col_id]),
+                        h("td", [id.col_name]),
+                        h("td", [id.col_number]),
+                        h("td", [id.status_code]),
+                      ]
+                    );
+                  }),
+                ]),
+              ]
+            ),
+            h(Button, { fill: true, minimal: true, intent: "success" }, [
+              "Add New Column",
+            ]),
+          ]),
         ]);
       }),
     ]),

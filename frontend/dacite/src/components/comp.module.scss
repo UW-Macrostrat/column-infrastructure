@@ -1,0 +1,22 @@
+.mySuggest {
+  overflow: scroll;
+  max-height: 200px;
+}
+.interval-row {
+  display: flex;
+  justify-content: space-between;
+}
+.row {
+  display: flex;
+  align-items: baseline;
+}
+.color-block {
+  height: 20px;
+  width: 20px;
+}
+.page {
+  margin: 10px;
+}
+.bread-crumbs {
+  display: flex;
+}

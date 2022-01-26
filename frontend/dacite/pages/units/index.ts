@@ -1,5 +1,6 @@
 import h from "@macrostrat/hyper";
-import pg, { usePostgrest, Row, UnitsView } from "../src";
+import pg, { usePostgrest, Row, UnitsView } from "../../src";
+import { BasePage } from "../../src";
 import { useRouter } from "next/router";
 import { Spinner } from "@blueprintjs/core";
 
@@ -22,10 +23,12 @@ function Units() {
     "Thickness",
   ];
   const onClick = (unit: UnitsView) => {
-    console.log("edit", unit);
+    router.push(
+      `/units/edit?project_id=${project_id}&col_id=${col_id}&section_id=${section_id}&unit_id=${unit.id}`
+    );
   };
   if (!units) return h(Spinner);
-  return h("div", [
+  return h(BasePage, { query: router.query }, [
     h("h3", ["Units"]),
     h("div.table-container", [
       h(
