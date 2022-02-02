@@ -41,32 +41,36 @@ export default function ColumnGroup() {
     ]),
     h("div", { style: { display: "flex", flexWrap: "wrap" } }, [
       columnGroups.map((colGroup, i) => {
-        return h("div", { style: { textAlign: "center", height: "100%" } }, [
-          h("h3", { style: { margin: 0 } }, colGroup.col_group_long),
-          h(Table, { key: i, interactive: true }, [
-            h("thead", [
-              h("tr", [
-                h("td", "ID"),
-                h("td", "Name"),
-                h("td", "Col #"),
-                h("td", "Status"),
+        return h(
+          "div",
+          { key: i, style: { textAlign: "center", height: "100%" } },
+          [
+            h("h3", { style: { margin: 0 } }, colGroup.col_group_long),
+            h(Table, { interactive: true }, [
+              h("thead", [
+                h("tr", [
+                  h("td", "ID"),
+                  h("td", "Name"),
+                  h("td", "Col #"),
+                  h("td", "Status"),
+                ]),
+              ]),
+              h("tbody", [
+                colGroup.cols.map((id, i) => {
+                  return h(Row, { key: i, onClick: () => onClick(id.col_id) }, [
+                    h("td", [id.col_id]),
+                    h("td", [id.col_name]),
+                    h("td", [id.col_number]),
+                    h("td", [id.status_code]),
+                  ]);
+                }),
               ]),
             ]),
-            h("tbody", [
-              colGroup.cols.map((id, i) => {
-                return h(Row, { key: i, onClick: () => onClick(id.col_id) }, [
-                  h("td", [id.col_id]),
-                  h("td", [id.col_name]),
-                  h("td", [id.col_number]),
-                  h("td", [id.status_code]),
-                ]);
-              }),
+            h(Button, { fill: true, minimal: true, intent: "success" }, [
+              "Add New Column",
             ]),
-          ]),
-          h(Button, { fill: true, minimal: true, intent: "success" }, [
-            "Add New Column",
-          ]),
-        ]);
+          ]
+        );
       }),
     ]),
   ]);

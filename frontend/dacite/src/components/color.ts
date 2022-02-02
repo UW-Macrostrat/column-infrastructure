@@ -20,7 +20,7 @@ function ColorBlock(props: ColorProps) {
       Popover2,
       {
         content: h(ChromePicker, {
-          onChangeComplete: onChange,
+          onChange: onChange,
           color: props.color,
         }),
       },

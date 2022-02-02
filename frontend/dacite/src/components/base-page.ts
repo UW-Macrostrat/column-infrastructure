@@ -49,9 +49,9 @@ export function BasePage(props: BasePageProps) {
       breadCrumbs.map((crumb, i) => {
         const last = i == breadCrumbs.length - 1;
         if (last) {
-          return h(Link, { href: crumb.href }, [h("a", [crumb.name])]);
+          return h(Link, { href: crumb.href, key: i }, [h("a", [crumb.name])]);
         } else {
-          return h("div", [
+          return h("div", { key: i }, [
             h(Link, { href: crumb.href }, [h("a", [crumb.name])]),
             h(Icon_),
           ]);

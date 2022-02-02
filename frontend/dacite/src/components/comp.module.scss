@@ -27,3 +27,18 @@
 .strat-name {
   margin: 0;
 }
+.tag-container,
+.tag-popover {
+  flex-wrap: wrap;
+  display: flex;
+  align-items: baseline;
+}
+.tag-popover {
+  padding: 10px;
+  height: 300px;
+  width: 900px;
+  overflow-y: scroll;
+}
+.tag {
+  margin: 5px;
+}

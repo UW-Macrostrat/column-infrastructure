@@ -11,6 +11,7 @@ function Units() {
     pg
       .from("units_view")
       .select()
+      .order("age_top", { ascending: true })
       .match({ section_id: section_id, col_id: col_id })
   );
   console.log(units);
