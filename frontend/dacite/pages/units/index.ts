@@ -2,7 +2,7 @@ import h from "@macrostrat/hyper";
 import pg, { usePostgrest, Row, UnitsView } from "../../src";
 import { BasePage, Table } from "../../src";
 import { useRouter } from "next/router";
-import { Spinner } from "@blueprintjs/core";
+import { Spinner, Button } from "@blueprintjs/core";
 
 function Units() {
   const router = useRouter();
@@ -30,7 +30,22 @@ function Units() {
   };
   if (!units) return h(Spinner);
   return h(BasePage, { query: router.query }, [
-    h("h3", ["Units"]),
+    h("h3", [
+      "Units",
+      h(
+        Button,
+        {
+          intent: "success",
+          minimal: true,
+          onClick: () => {
+            router.push(
+              `/units/new?project_id=${project_id}&col_id=${col_id}&section_id=${section_id}&unit_id=null`
+            );
+          },
+        },
+        ["Add new unit"]
+      ),
+    ]),
     h(Table, { interactive: true }, [
       h("thead", [
         h("tr", [

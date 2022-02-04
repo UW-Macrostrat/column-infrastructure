@@ -1,3 +1,4 @@
+import { Button } from "@blueprintjs/core";
 import h from "@macrostrat/hyper";
 import { useRouter } from "next/router";
 import pg, { usePostgrest, IColumnSection, Row, BasePage, Table } from "../src";
@@ -47,7 +48,7 @@ function dataPreProcess(col_id: any) {
 
 export default function ColumnGroup() {
   const router = useRouter();
-  const { col_id, project_id } = router.query;
+  const { col_id, project_id, col_group_id } = router.query;
   if (!col_id) return h("div");
 
   const { data, col_name } = dataPreProcess(col_id);
@@ -62,7 +63,19 @@ export default function ColumnGroup() {
     );
   };
   return h(BasePage, { query: router.query }, [
-    h("h3", [`Sections for ${col_name}`]),
+    h("h3", [
+      `Sections for ${col_name}`,
+      h(Button, {
+        intent: "success",
+        minimal: true,
+        icon: "edit",
+        onClick: () => {
+          router.push(
+            `/column/edit?project_id=${project_id}&col_group_id=${col_group_id}&col_id=${col_id}`
+          );
+        },
+      }),
+    ]),
     h(Table, { interactive: true }, [
       h("thead", [
         h("tr", [

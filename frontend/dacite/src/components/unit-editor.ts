@@ -118,14 +118,14 @@ function UnitThickness() {
     h("td", [
       h(NumericInput, {
         onValueChange: (e) => update("min_thick", e),
-        defaultValue: unit.min_thick,
+        defaultValue: unit?.min_thick,
       }),
     ]),
     h("td", [h("h4.strat-name", ["Max-Thick: "])]),
     h("td", [
       h(NumericInput, {
         onValueChange: (e) => update("max_thick", e),
-        defaultValue: unit.max_thick,
+        defaultValue: unit?.max_thick,
       }),
     ]),
   ]);
@@ -147,22 +147,21 @@ function UnitEdit() {
   };
 
   return h("div", [
-    h("h3", ["Edit Unit: ", unit.strat_name]),
     h(Table, { interactive: false }, [
       h("tbody", [
         h("tr", [
           h("td", [h("h4.strat-name", ["Stratigraphic Name: "])]),
           h("td", [
-            unit.strat_name,
+            unit?.strat_name,
             h("a", { style: { fontSize: "10px" } }, ["(modify)"]),
           ]),
         ]),
         h(IntervalRow, {
-          age_top: unit.age_top,
-          position_top: unit.position_top,
+          age_top: unit?.age_top,
+          position_top: unit?.position_top,
           initialSelected: {
-            id: unit.lo || 0,
-            interval_name: unit.name_lo,
+            id: unit?.lo || 0,
+            interval_name: unit?.name_lo,
           },
           onChange: (interval: IntervalI) => {
             const { id: lo, interval_name: name_lo, age_top } = interval;
@@ -180,11 +179,11 @@ function UnitEdit() {
         }),
         h(IntervalRow, {
           onPositionChange: (e) => updateUnit("position_bottom", e),
-          age_bottom: unit.age_bottom,
-          position_bottom: unit.position_bottom,
+          age_bottom: unit?.age_bottom,
+          position_bottom: unit?.position_bottom,
           initialSelected: {
-            id: unit.fo || 0,
-            interval_name: unit.name_fo,
+            id: unit?.fo || 0,
+            interval_name: unit?.name_fo,
           },
           onChange: (interval: IntervalI) => {
             const { id: fo, interval_name: name_fo, age_bottom } = interval;
@@ -208,7 +207,7 @@ function UnitEdit() {
                   model: { unit: { color: { $set: color } } },
                 });
               },
-              color: unit.color,
+              color: unit?.color,
             }),
           ]),
           h(UnitThickness),

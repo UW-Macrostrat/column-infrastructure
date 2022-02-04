@@ -31,13 +31,26 @@ export default function ColumnGroup() {
   if (!columnGroups || !projects) return h("div");
   const project = projects[0];
 
-  const onClick = (col_id: number) => {
-    router.push(`/column?project_id=${project_id}&col_id=${col_id}`);
+  const onClick = (col_id: number, col_group_id: number) => {
+    router.push(
+      `/column?project_id=${project_id}&col_group_id=${col_group_id}&col_id=${col_id}`
+    );
   };
   return h(BasePage, { query: router.query }, [
     h("h3", [
       project.project,
-      h(Button, { minimal: true, intent: "success" }, ["Add New Group"]),
+      h(
+        Button,
+        {
+          minimal: true,
+          intent: "success",
+          onClick: () =>
+            router.push(
+              `/column-groups/new?project_id=${project_id}&col_id=null`
+            ),
+        },
+        ["Add New Group"]
+      ),
     ]),
     h("div", { style: { display: "flex", flexWrap: "wrap" } }, [
       columnGroups.map((colGroup, i) => {
@@ -45,7 +58,19 @@ export default function ColumnGroup() {
           "div",
           { key: i, style: { textAlign: "center", height: "100%" } },
           [
-            h("h3", { style: { margin: 0 } }, colGroup.col_group_long),
+            h("div.col-group-name", [
+              h("h3", { style: { margin: 0 } }, colGroup.col_group_long),
+              h(Button, {
+                minimal: true,
+                small: true,
+                intent: "success",
+                icon: "edit",
+                onClick: () =>
+                  router.push(
+                    `/column-groups/edit?project_id=${project.id}&col_group_id=${colGroup.id}&col_id=null`
+                  ),
+              }),
+            ]),
             h(Table, { interactive: true }, [
               h("thead", [
                 h("tr", [
@@ -57,18 +82,32 @@ export default function ColumnGroup() {
               ]),
               h("tbody", [
                 colGroup.cols.map((id, i) => {
-                  return h(Row, { key: i, onClick: () => onClick(id.col_id) }, [
-                    h("td", [id.col_id]),
-                    h("td", [id.col_name]),
-                    h("td", [id.col_number]),
-                    h("td", [id.status_code]),
-                  ]);
+                  return h(
+                    Row,
+                    { key: i, onClick: () => onClick(id.col_id, colGroup.id) },
+                    [
+                      h("td", [id.col_id]),
+                      h("td", [id.col_name]),
+                      h("td", [id.col_number]),
+                      h("td", [id.status_code]),
+                    ]
+                  );
                 }),
               ]),
             ]),
-            h(Button, { fill: true, minimal: true, intent: "success" }, [
-              "Add New Column",
-            ]),
+            h(
+              Button,
+              {
+                fill: true,
+                minimal: true,
+                intent: "success",
+                onClick: () =>
+                  router.push(
+                    `/column/new?project_id=${project.id}&col_group_id=${colGroup.id}&col_id=null`
+                  ),
+              },
+              ["Add New Column"]
+            ),
           ]
         );
       }),

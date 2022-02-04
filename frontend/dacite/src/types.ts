@@ -1,8 +1,14 @@
 export interface Project {
   descrip: string;
-  id: number;
+  id?: number;
   project: string;
-  timescale_id: number;
+  timescale_id?: number;
+}
+
+export interface TimeScale {
+  id: number;
+  timescale: string;
+  ref_id: number;
 }
 
 export interface ColumnGroupI {
@@ -11,6 +17,23 @@ export interface ColumnGroupI {
   cols: ICol[];
   id: number;
   project_id: number;
+}
+
+export interface RefI {
+  id?: number;
+  ref_id?: number;
+  pub_year: number;
+  author: string;
+  ref: string;
+  doi?: string;
+  url?: string;
+}
+
+export interface ColumnForm {
+  col_id: number;
+  col_name: string;
+  col_number: number;
+  ref: RefI;
 }
 
 // interface for col that shows up in column_group

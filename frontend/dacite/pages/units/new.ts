@@ -13,29 +13,6 @@ import { Spinner } from "@blueprintjs/core";
 import styles from "./units.module.scss";
 const h = hyperStyled(styles);
 
-function getUnitData(unit_id: number) {
-  const units: UnitsView[] = usePostgrest(
-    pg
-      .from("units_view")
-      .select()
-      .match({ id: unit_id })
-      .limit(1)
-  );
-  const envs: EnvironUnit[] = usePostgrest(
-    pg
-      .from("environ_unit")
-      .select()
-      .match({ unit_id: unit_id })
-  );
-  const liths: LithUnit[] = usePostgrest(
-    pg
-      .from("lith_unit")
-      .select()
-      .match({ unit_id: unit_id })
-  );
-  return { units, envs, liths };
-}
-
 /* 
 Needs a strat_name displayer, we'll be stricter with editing that
 
@@ -46,21 +23,16 @@ function UnitEdit() {
   const router = useRouter();
   const { project_id, col_id, section_id, unit_id } = router.query;
   if (!unit_id) return h(Spinner);
-  const { units, envs, liths } = getUnitData(unit_id);
-  if (!units || !envs || !liths) return h(Spinner);
-  const unit = units[0];
 
-  const model = { unit, envs, liths };
+  const model = { unit: {}, liths: [], envs: [] };
   const persistChanges = (
     updatedModel: UnitsView,
     changeSet: Partial<UnitsView>
   ) => {
     console.log(updatedModel, changeSet);
-    return updatedModel;
   };
 
   return h(BasePage, { query: router.query }, [
-    h("h3", ["Edit Unit: ", unit.strat_name]),
     //@ts-ignore
     h(UnitEditor, { model, persistChanges }),
   ]);
