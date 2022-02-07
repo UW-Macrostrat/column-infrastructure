@@ -160,7 +160,7 @@ function ProjectEdit() {
         h.if(timescales != undefined)(TimeScaleSuggest, {
           initialSelected: model.timescale_id,
           timescales,
-          onChange: (e: TimeScale) => updateProject("timescale", e),
+          onChange: (e: TimeScale) => updateProject("timescale_id", e.id),
         }),
       ]
     ),

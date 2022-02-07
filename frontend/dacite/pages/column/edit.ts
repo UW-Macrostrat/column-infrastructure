@@ -28,7 +28,7 @@ const getData = (project_id: any, col_id: any) => {
   return { colGroups, column };
 };
 
-export default function NewColumn() {
+export default function EditColumn() {
   const router = useRouter();
   const { project_id, col_group_id, col_id } = router.query;
   const { colGroups, column } = getData(project_id, col_id);
@@ -36,9 +36,9 @@ export default function NewColumn() {
   if (!colGroups || !column) return h(Spinner);
   const curColGroup = colGroups.filter((cg) => cg.id == col_group_id);
 
-  const persistChanges = (e, c) => {
+  const persistChanges = (e: ColumnForm, c: Partial<ColumnForm>) => {
     console.log(e, c);
-    return c;
+    return e;
   };
 
   return h(BasePage, { query: router.query }, [

@@ -18,9 +18,18 @@ export default function NewProject() {
 
   if (!project) return h(Spinner);
 
-  const persistChanges = (e: Partial<Project>, c: Partial<Project>) => {
-    console.log(e, c);
-    return c;
+  const persistChanges = async (e: Project, c: Partial<Project>) => {
+    const { data, error } = await pg
+      .from("projects")
+      .update(c)
+      .match({ id: e.id });
+    console.log("Error", error);
+    if (!error) {
+      router.push("/");
+      return data[0];
+    } else {
+      // error catching here
+    }
   };
 
   return h(BasePage, { query: router.query }, [

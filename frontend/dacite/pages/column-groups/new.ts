@@ -29,12 +29,19 @@ export default function NewProject() {
     col_group_long: "",
   };
 
-  const persistChanges = (
+  const persistChanges = async (
     e: Partial<ColumnGroupI>,
     c: Partial<ColumnGroupI>
   ) => {
-    console.log(e, c);
-    return c;
+    const { data, error } = await pg
+      .from("col_groups")
+      .insert([{ ...e, project_id: project_id }]);
+    if (!error) {
+      router.push(`/column-groups?project_id=${project_id}`);
+      return data[0];
+    } else {
+      //catch error
+    }
   };
 
   const project = projects[0];

@@ -10,12 +10,13 @@ export default function NewProject() {
   const newProject: Project = {
     project: "",
     descrip: "",
-    timescale_id: -1,
+    timescale_id: undefined,
   };
 
-  const persistChanges = (e: Partial<Project>, c: Partial<Project>) => {
-    console.log(e, c);
-    return c;
+  const persistChanges = async (e: Project, c: Partial<Project>) => {
+    const { data, error } = await pg.from("projects").insert([e]);
+    router.push("/");
+    return data[0];
   };
 
   return h(BasePage, { query: router.query }, [

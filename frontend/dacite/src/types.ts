@@ -21,7 +21,6 @@ export interface ColumnGroupI {
 
 export interface RefI {
   id?: number;
-  ref_id?: number;
   pub_year: number;
   author: string;
   ref: string;
