@@ -4,10 +4,11 @@ import pg, {
   UnitsView,
   LithUnit,
   EnvironUnit,
-  IntervalI,
+  UnitEditorModel,
   BasePage,
   UnitEditor,
 } from "../../src";
+import { conductChangeSet, detectDeletionsAndAdditions } from "../../src/components/helpers";
 import { useRouter } from "next/router";
 import { Spinner } from "@blueprintjs/core";
 import styles from "./units.module.scss";
@@ -51,11 +52,56 @@ function UnitEdit() {
   const unit = units[0];
 
   const model = { unit, envs, liths };
-  const persistChanges = (
-    updatedModel: UnitsView,
-    changeSet: Partial<UnitsView>
+  const persistChanges = async (
+    updatedModel: UnitEditorModel,
+    changeSet: Partial<UnitEditorModel>
   ) => {
-    console.log(updatedModel, changeSet);
+    if (changeSet.unit) {
+      const changes = conductChangeSet(unit, changeSet.unit);
+      const { data, error } = await pg
+        .from("units")
+        .update(changes)
+        .match({ id: unit.id });
+    }
+
+    if (changeSet.envs) {
+      const { deletions, additions } = detectDeletionsAndAdditions(
+        envs,
+        changeSet.envs
+      );
+      if (additions.length > 0) {
+        const inserts = additions.map((i) => {
+          return { unit_id: unit.id, environ_id: i };
+        });
+        const { data, error } = await pg.from("unit_environs").insert(inserts);
+      }
+      if (deletions.length > 0) {
+        const { data, error } = await pg
+          .from("unit_environs")
+          .delete()
+          .in("environ_id", deletions)
+          .match({ unit_id: unit.id });
+      }
+    }
+    if (changeSet.liths) {
+      const { deletions, additions } = detectDeletionsAndAdditions(
+        liths,
+        changeSet.liths
+      );
+      if (additions.length > 0) {
+        const inserts = additions.map((i) => {
+          return { unit_id: unit.id, lith_id: i };
+        });
+        const { data, error } = await pg.from("unit_liths").insert(inserts);
+      }
+      if (deletions.length > 0) {
+        const { data, error } = await pg
+          .from("unit_liths")
+          .delete()
+          .in("lith_id", deletions)
+          .match({ unit_id: unit.id });
+      }
+    }
     return updatedModel;
   };
 

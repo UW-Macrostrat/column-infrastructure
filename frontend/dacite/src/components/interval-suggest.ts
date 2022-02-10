@@ -91,7 +91,7 @@ function IntervalRow(props: IntervalRowProps) {
       const { data, error } = await pg
         .from("intervals")
         .select()
-        .limit(200);
+        .limit(50);
       setIntervals(data);
     }
   };
@@ -101,7 +101,7 @@ function IntervalRow(props: IntervalRowProps) {
       const { data, error } = await pg
         .from("intervals")
         .select()
-        .limit(200);
+        .limit(50);
       setIntervals(data);
     };
     getData();

@@ -11,7 +11,7 @@ import styles from "./colgroup.module.scss";
 import { Spinner } from "@blueprintjs/core";
 const h = hyperStyled(styles);
 
-export default function NewProject() {
+export default function EditColumnGroup() {
   const router = useRouter();
   const { project_id, col_group_id } = router.query;
 
@@ -31,12 +31,21 @@ export default function NewProject() {
 
   const columnGroup: Partial<ColumnGroupI> = colGroups[0];
 
-  const persistChanges = (
+  const persistChanges = async (
     e: Partial<ColumnGroupI>,
     c: Partial<ColumnGroupI>
   ) => {
+    const { data, error } = await pg
+      .from("col_groups")
+      .update(c)
+      .match({ id: e.id });
     console.log(e, c);
-    return c;
+    if (!error) {
+      router.push(`/column-groups?project_id=${project_id}`);
+      return data[0];
+    } else {
+      console.error(error);
+    }
   };
 
   const project = projects[0];

@@ -20,7 +20,8 @@ import {
   ModelEditButton,
 } from "@macrostrat/ui-components/lib/esm";
 import styles from "./comp.module.scss";
-import { EnvTagsAdd, LithTagsAdd } from ".";
+import { EnvTagsAdd, LithTagsAdd, StratNameCell } from ".";
+import pg, { usePostgrest } from "../db";
 
 const h = hyperStyled(styles);
 
@@ -131,6 +132,39 @@ function UnitThickness() {
   ]);
 }
 
+function StratName({ updateUnit }) {
+  const { model, actions } = useModelEditor();
+  const { unit } = model;
+
+  const names: { strat_name: string; rank: string }[] = usePostgrest(
+    pg
+      .from("strat_names")
+      .select("strat_name,rank")
+      .limit(200)
+  );
+
+  if (!names) {
+    return h("tr", [
+      h("td", [h("h4.strat-name", ["Stratigraphic Name: "])]),
+      h("td", [
+        unit?.strat_name,
+        h("a", { style: { fontSize: "10px" } }, ["(modify)"]),
+      ]),
+    ]);
+  }
+  const strat_names = names.map((n) => `${n.strat_name} (${n.rank})`);
+
+  return h("tr", [
+    h("td", [h("h4.strat-name", ["Stratigraphic Name: "])]),
+    h("td", [
+      h(StratNameCell, {
+        initialSelected: unit?.strat_name,
+        onChange: (i) => updateUnit("strat_name", i),
+      }),
+    ]),
+  ]);
+}
+
 /* 
 Needs a strat_name displayer, we'll be stricter with editing that
 
@@ -149,13 +183,7 @@ function UnitEdit() {
   return h("div", [
     h(Table, { interactive: false }, [
       h("tbody", [
-        h("tr", [
-          h("td", [h("h4.strat-name", ["Stratigraphic Name: "])]),
-          h("td", [
-            unit?.strat_name,
-            h("a", { style: { fontSize: "10px" } }, ["(modify)"]),
-          ]),
-        ]),
+        h(StratName, { updateUnit }),
         h(IntervalRow, {
           age_top: unit?.age_top,
           position_top: unit?.position_top,
@@ -216,7 +244,7 @@ function UnitEdit() {
           h("td", [h("h4.strat-name", "Notes: ")]),
           h("td", { colSpan: 5 }, [
             h(TextArea),
-            h("b", ["NOTE: There is no notes in the db... "]),
+            //h("b", ["NOTE: There is no notes in the db... "]),
           ]),
         ]),
         h("tr", [
@@ -241,7 +269,7 @@ function UnitEdit() {
   ]);
 }
 
-interface UnitEditorModel {
+export interface UnitEditorModel {
   unit: UnitsView;
   envs: EnvironUnit[];
   liths: LithUnit[];

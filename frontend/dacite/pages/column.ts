@@ -12,7 +12,6 @@ function dataPreProcess(col_id: any) {
   );
   if (!colSections) return [];
   const col_name = colSections[0]["col_name"];
-
   let data: any = {};
   colSections.forEach((col) => {
     const { section_id, position_bottom, top, bottom } = col;
@@ -54,7 +53,6 @@ export default function ColumnGroup() {
   const { data, col_name } = dataPreProcess(col_id);
 
   if (!data) return h("div");
-
   const headers = Object.keys(data[0]);
 
   const onClick = (col) => {
@@ -76,24 +74,44 @@ export default function ColumnGroup() {
         },
       }),
     ]),
-    h(Table, { interactive: true }, [
-      h("thead", [
-        h("tr", [
-          headers.map((head, i) => {
-            return h("th", { key: i }, [head]);
+    h.if(data.filter((d) => d.section_id != undefined).length == 0)("div", [
+      h("h3", [
+        "Looks like there are no sections or units. To begin create a new unit",
+      ]),
+      h(
+        Button,
+        {
+          intent: "success",
+          onClick: () =>
+            router.push(
+              `/units/new?project_id=${project_id}&col_id=${col_id}&section_id=null`
+            ),
+        },
+        ["Create Unit"]
+      ),
+    ]),
+    h.if(data.filter((d) => d.section_id != undefined).length > 0)(
+      Table,
+      { interactive: true },
+      [
+        h("thead", [
+          h("tr", [
+            headers.map((head, i) => {
+              return h("th", { key: i }, [head]);
+            }),
+          ]),
+        ]),
+        h("tbody", [
+          data.map((col, i) => {
+            return h(Row, { key: i, onClick: () => onClick(col) }, [
+              h("td", [col.section_id]),
+              h("td", [col.top]),
+              h("td", [col.bottom]),
+              h("td", [h("a", `view ${col.units} units`)]),
+            ]);
           }),
         ]),
-      ]),
-      h("tbody", [
-        data.map((col, i) => {
-          return h(Row, { key: i, onClick: () => onClick(col) }, [
-            h("td", [col.section_id]),
-            h("td", [col.top]),
-            h("td", [col.bottom]),
-            h("td", [h("a", `view ${col.units} units`)]),
-          ]);
-        }),
-      ]),
-    ]),
+      ]
+    ),
   ]);
 }
