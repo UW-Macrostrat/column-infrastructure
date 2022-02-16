@@ -45,6 +45,7 @@ export default function EditColumn() {
       delete c.col_number;
     }
     if (c.ref) {
+      // handle the changing of a ref, either one that exists or was created
       ref_id = c.ref.id;
       delete c.ref;
     }
