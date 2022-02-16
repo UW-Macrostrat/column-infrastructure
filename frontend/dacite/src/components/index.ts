@@ -7,4 +7,4 @@ export * from "./unit-editor";
 export * from "./project-editor";
 export * from "./column-group-editor";
 export * from "./column-editor";
-export * from "./strat_name";
+export * from "./strat-name";

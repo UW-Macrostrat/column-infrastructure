@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import { Suggest, ItemRenderer, ItemPredicate } from "@blueprintjs/select";
 import { Icon, MenuItem, Spinner } from "@blueprintjs/core";
-import pg, { usePostgrest } from "../db";
+import pg, { usePostgrest } from "../../db";
 import { hyperStyled } from "@macrostrat/hyper";
-import styles from "./comp.module.scss";
+import styles from "../comp.module.scss";
+import { StratNameI } from "../..";
 
 const h = hyperStyled(styles);
 
 interface StratSuggestProps {
-  initialSelected: string | undefined;
-  strat_names: string[];
-  onChange: (item: string) => void;
+  initialSelected: StratNameI | undefined;
+  strat_names: StratNameI[];
+  onChange: (item: StratNameI) => void;
   onQueryChange?: (query: string) => void;
 }
 
@@ -18,43 +19,43 @@ function StratNameSuggest(props: StratSuggestProps) {
   let itemz = [...props.strat_names];
   if (
     props.initialSelected &&
-    props.strat_names.includes(props.initialSelected)
+    props.strat_names.map((s) => s.id).includes(props.initialSelected.id)
   ) {
-    const spot = itemz.indexOf(props.initialSelected);
+    const spot = itemz.map((s) => s.id).indexOf(props.initialSelected.id);
     itemz.splice(spot, 1);
   }
 
   const [selected, setSelected] = useState(props.initialSelected);
 
-  const itemRenderer: ItemRenderer<string> = (
-    item: String,
+  const itemRenderer: ItemRenderer<StratNameI> = (
+    item: StratNameI,
     { handleClick, index }
   ) => {
-    const active = selected == item;
+    const active = selected?.id == item.id;
     return h(MenuItem, {
       key: index,
       labelElement: active ? h(Icon, { icon: "tick" }) : null,
-      text: item,
+      text: `${item.strat_name} (${item.rank})`,
       onClick: handleClick,
       active: active,
     });
   };
 
-  const itemPredicate: ItemPredicate<string> = (
+  const itemPredicate: ItemPredicate<StratNameI> = (
     query: string,
-    item: string
+    item: StratNameI
   ) => {
-    return item.toLowerCase().indexOf(query.toLowerCase()) >= 0;
+    return item.strat_name.toLowerCase().indexOf(query.toLowerCase()) >= 0;
   };
 
-  const onItemSelect = (item: string) => {
+  const onItemSelect = (item: StratNameI) => {
     setSelected(item);
     props.onChange(item);
   };
   //@ts-ignore
   return h(Suggest, {
-    inputValueRenderer: (item: string) => item,
-    items: props.initialSelected ? [props.initialSelected, ...itemz] : itemz,
+    inputValueRenderer: (item: StratNameI) => item.strat_name,
+    items: itemz,
     popoverProps: {
       minimal: true,
       popoverClassName: styles.mySuggest,
@@ -70,36 +71,36 @@ function StratNameSuggest(props: StratSuggestProps) {
 
 const getStratNames = async (
   query: string,
-  setNames: (e: string[]) => void
+  setNames: (e: StratNameI[]) => void
 ) => {
   if (query.length > 2) {
     const { data, error } = await pg
       .from("strat_names")
-      .select("strat_name,rank")
+      .select()
       .like("strat_name", `%${query}%`)
       .limit(50);
-    const strat_names = data.map((n) => `${n.strat_name} (${n.rank})`);
-    setNames(strat_names);
+    //const strat_names = data.map((n) => `${n.strat_name} (${n.rank})`);
+    setNames(data);
   } else {
     const { data, error } = await pg
       .from("strat_names")
-      .select("strat_name,rank")
+      .select()
       .limit(50);
-    const strat_names = data.map((n) => `${n.strat_name} (${n.rank})`);
-    setNames(strat_names);
+    //const strat_names = data.map((n) => `${n.strat_name} (${n.rank})`);
+    setNames(data);
   }
 };
 
 interface StratCellProps {
-  initialSelected: string | undefined;
-  onChange: (item: string) => void;
+  initialSelected: StratNameI | undefined;
+  onChange: (item: StratNameI) => void;
 }
 
 function StratNameCell(props: StratCellProps) {
-  const [names, setNames] = useState<string[]>([""]);
+  const [names, setNames] = useState<StratNameI[]>([]);
 
   const onQueryChange = (i: string) => {
-    getStratNames(i, (e: string[]) => setNames(e));
+    getStratNames(i, (e: StratNameI[]) => setNames(e));
   };
 
   useEffect(() => {
