@@ -54,7 +54,10 @@ export interface IColumnSection extends ICol {
 
 export interface UnitsView {
   id: number;
+  unit_strat_name: string;
   strat_name: string;
+  strat_name_id: number;
+  rank: string;
   color: string;
   outcrop?: string;
   fo?: number;
@@ -104,4 +107,22 @@ export interface IntervalI {
   interval_abbrev?: string;
   interval_color: string;
   rank: number;
+}
+
+export enum RANK {
+  "SGp" = "SGp",
+  "Gp" = "Gp",
+  "SubGp" = "SubGp",
+  "Fm" = "Fm",
+  "Mbr" = "Mbr",
+  "Bed" = "Bed",
+}
+
+export interface StratNameI {
+  id: number;
+  strat_name: string;
+  rank: RANK;
+  ref_id: number;
+  concept_id?: number;
+  parent?: StratNameI;
 }
