@@ -58,7 +58,11 @@ function Units() {
         units.map((unit, i) => {
           return h(Row, { key: i, onClick: () => onClick(unit) }, [
             h("td", [unit.id]),
-            h("td", [unit.strat_name]),
+            h("td", [
+              unit.strat_name
+                ? `${unit.strat_name} ${unit.rank}`
+                : unit.unit_strat_name || "unnamed",
+            ]),
             h("td", [unit.name_fo]),
             h("td", [unit.name_lo]),
             h("td", { style: { backgroundColor: unit.color } }, [unit.color]),
