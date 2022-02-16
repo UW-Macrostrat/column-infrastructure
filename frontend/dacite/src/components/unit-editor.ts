@@ -1,4 +1,5 @@
 import { hyperStyled } from "@macrostrat/hyper";
+import Link from "next/link";
 import {
   UnitsView,
   LithUnit,
@@ -46,12 +47,12 @@ function EnvTags() {
     };
   });
 
-  const onClickDelete = (env) => {
-    const filteredLiths = [...envs].filter((l) => l.id != env.id);
-    actions.updateState({ model: { envs: { $set: filteredLiths } } });
+  const onClickDelete = (id: number) => {
+    const filteredEnvs = [...envs].filter((l) => l.id != id);
+    actions.updateState({ model: { envs: { $set: filteredEnvs } } });
   };
 
-  const onClick = (env) => {
+  const onClick = (env: Partial<EnvironUnit>) => {
     actions.updateState({ model: { envs: { $push: [env] } } });
   };
 
@@ -85,12 +86,12 @@ function LithTags() {
     };
   });
 
-  const onClickDelete = (lith) => {
-    const filteredLiths = [...liths].filter((l) => l.id != lith.id);
+  const onClickDelete = (id: number) => {
+    const filteredLiths = [...liths].filter((l) => l.id != id);
     actions.updateState({ model: { liths: { $set: filteredLiths } } });
   };
 
-  const onClick = (lith) => {
+  const onClick = (lith: Partial<LithUnit>) => {
     actions.updateState({ model: { liths: { $push: [lith] } } });
   };
 
@@ -132,35 +133,25 @@ function UnitThickness() {
   ]);
 }
 
-function StratName({ updateUnit }) {
+function StratName({
+  updateUnit,
+}: {
+  updateUnit: (field: string, i: any) => void;
+}) {
   const { model, actions } = useModelEditor();
-  const { unit } = model;
+  const { unit }: UnitEditorModel = model;
 
-  const names: { strat_name: string; rank: string }[] = usePostgrest(
-    pg
-      .from("strat_names")
-      .select("strat_name,rank")
-      .limit(200)
-  );
-
-  if (!names) {
-    return h("tr", [
-      h("td", [h("h4.strat-name", ["Stratigraphic Name: "])]),
-      h("td", [
-        unit?.strat_name,
-        h("a", { style: { fontSize: "10px" } }, ["(modify)"]),
-      ]),
-    ]);
-  }
-  const strat_names = names.map((n) => `${n.strat_name} (${n.rank})`);
+  const href = unit.strat_name_id
+    ? `/strat-name/edit?strat_name_id=${unit.strat_name_id}`
+    : "new";
 
   return h("tr", [
     h("td", [h("h4.strat-name", ["Stratigraphic Name: "])]),
     h("td", [
-      h(StratNameCell, {
-        initialSelected: unit?.strat_name,
-        onChange: (i) => updateUnit("strat_name", i),
-      }),
+      unit?.strat_name || unit.unit_strat_name || "Unnamed",
+      h(Link, { href }, [
+        h("a", { style: { fontSize: "10px" } }, ["(modify)"]),
+      ]),
     ]),
   ]);
 }

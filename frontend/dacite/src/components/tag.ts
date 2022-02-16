@@ -21,7 +21,7 @@ interface tagBody extends tagInfo {
   isEditing?: boolean;
 }
 
-export function isTooDark(hexcolor) {
+export function isTooDark(hexcolor: string) {
   var r = parseInt(hexcolor.substr(1, 2), 16);
   var g = parseInt(hexcolor.substr(3, 2), 16);
   var b = parseInt(hexcolor.substr(4, 2), 16);
@@ -40,7 +40,7 @@ function TagBody(props: tagBody) {
     name,
     description,
     color,
-    onClick = null,
+    onClick = (e: tagInfo) => {},
     onClickDelete = () => {},
     isEditing = false,
     id = 10000,
@@ -55,7 +55,7 @@ function TagBody(props: tagBody) {
   let tag: tagInfo = { id, name, description, color };
 
   const onRemove = () => {
-    onClickDelete(tag);
+    onClickDelete(tag.id || 0);
   };
 
   return h(Tooltip, { content: description, disabled }, [
@@ -66,8 +66,8 @@ function TagBody(props: tagBody) {
         large: true,
         round: true,
         className: styles.tag,
-        onRemove: isEditing && onRemove,
-        onClick,
+        onRemove: isEditing ? onRemove : undefined,
+        onClick: (e) => onClick(tag),
         interactive: props.onClick != null,
         style: { backgroundColor: color, color: textColor },
       },
@@ -76,7 +76,7 @@ function TagBody(props: tagBody) {
   ]);
 }
 
-function LithTagsAdd(props: { onClick: (e: tagInfo) => void }) {
+function LithTagsAdd(props: { onClick: (e: Partial<LithUnit>) => void }) {
   const liths: Partial<LithUnit>[] = usePostgrest(pg.from("liths"));
   if (!liths) return h(Spinner);
 
@@ -97,7 +97,7 @@ function LithTagsAdd(props: { onClick: (e: tagInfo) => void }) {
   ]);
 }
 
-function EnvTagsAdd(props: { onClick: (e: tagInfo) => void }) {
+function EnvTagsAdd(props: { onClick: (e: Partial<EnvironUnit>) => void }) {
   const envs: Partial<EnvironUnit>[] = usePostgrest(pg.from("environs"));
   if (!envs) return h(Spinner);
 
