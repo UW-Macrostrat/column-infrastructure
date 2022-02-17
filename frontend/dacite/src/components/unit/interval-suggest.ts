@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { hyperStyled } from "@macrostrat/hyper";
 import { Suggest, ItemRenderer, ItemPredicate } from "@blueprintjs/select";
-import { MenuItem, Icon, NumericInput, Spinner } from "@blueprintjs/core";
-import { IntervalI } from "../types";
-import pg from "../db";
-import styles from "./comp.module.scss";
+import { MenuItem, Icon, Spinner } from "@blueprintjs/core";
+import { IntervalI } from "../../types";
+import { InfoCell } from "..";
+import pg from "../../db";
+import styles from "../comp.module.scss";
 
 const h = hyperStyled(styles);
 
@@ -72,14 +73,11 @@ function IntervalSuggest(props: IntervalSuggestProps) {
 interface IntervalRowProps extends IntervalProps {
   age_bottom?: number;
   age_top?: number;
-  position_top?: number;
-  position_bottom?: number;
-  onPositionChange: (e: number) => void;
 }
 
 function IntervalRow(props: IntervalRowProps) {
   const [intervals, setIntervals] = useState([]);
-  const getIntervals = async (query) => {
+  const getIntervals = async (query: string) => {
     if (query.length > 2) {
       const { data, error } = await pg
         .from("intervals")
@@ -109,14 +107,10 @@ function IntervalRow(props: IntervalRowProps) {
 
   const label: string = props.age_top ? "Top (LO): " : "Bottom (FO): ";
 
-  const positionLabel: string = props.position_bottom
-    ? "Position Bottom: "
-    : "Position Top: ";
-
   const ageLabel: string = props.age_bottom ? "Age Bottom: " : "Age Top: ";
 
-  return h("tr", [
-    h("td", [h("h4", { style: { margin: 0 } }, [label])]),
+  return h(React.Fragment, [
+    h(InfoCell, { text: label }),
     h("td", [
       h.if(intervals == undefined)(Spinner),
       h.if(intervals != undefined)(IntervalSuggest, {
@@ -126,15 +120,8 @@ function IntervalRow(props: IntervalRowProps) {
         initialSelected: props.initialSelected,
       }),
     ]),
-    h("td", [h("h4", { style: { margin: 0 } }, [ageLabel])]),
+    h(InfoCell, { text: ageLabel }),
     h("td", [props.age_bottom || props.age_top, " ma"]),
-    h("td", [h("h4", { style: { margin: 0 } }, [positionLabel])]),
-    h("td", [
-      h(NumericInput, {
-        onValueChange: props.onPositionChange,
-        defaultValue: props.position_bottom || props.position_top,
-      }),
-    ]),
   ]);
 }
 

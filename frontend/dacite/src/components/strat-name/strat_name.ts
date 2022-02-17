@@ -79,14 +79,12 @@ const getStratNames = async (
       .select()
       .like("strat_name", `%${query}%`)
       .limit(50);
-    //const strat_names = data.map((n) => `${n.strat_name} (${n.rank})`);
     setNames(data);
   } else {
     const { data, error } = await pg
       .from("strat_names")
       .select()
       .limit(50);
-    //const strat_names = data.map((n) => `${n.strat_name} (${n.rank})`);
     setNames(data);
   }
 };

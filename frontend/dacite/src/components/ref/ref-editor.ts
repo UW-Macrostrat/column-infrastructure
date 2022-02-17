@@ -1,19 +1,15 @@
 import { hyperStyled } from "@macrostrat/hyper";
-import { Table } from "../index";
-import {
-  Button,
-  NumericInput,
-  TextArea,
-  InputGroup,
-} from "@blueprintjs/core";
+import { Table } from "../../index";
+import { NumericInput, TextArea, InputGroup } from "@blueprintjs/core";
 import {
   ModelEditor,
   useModelEditor,
   ModelEditButton,
   //@ts-ignore
 } from "@macrostrat/ui-components/lib/esm";
-import styles from "./comp.module.scss";
-import { RefI } from "../types";
+import styles from "../comp.module.scss";
+import { RefI } from "../../types";
+import { InfoCell, SubmitButton } from "..";
 
 const h = hyperStyled(styles);
 
@@ -35,7 +31,7 @@ function RefEdit() {
     h(Table, { interactive: false }, [
       h("tbody", [
         h("tr", [
-          h("td", [h("h4", ["Author"])]),
+          h(InfoCell, { text: "Author" }),
           h("td", [
             h(InputGroup, {
               style: { width: "200px" },
@@ -43,7 +39,7 @@ function RefEdit() {
               onChange: (e) => updateRef("author", e.target.value),
             }),
           ]),
-          h("td", [h("h4", ["Pub Year"])]),
+          h(InfoCell, { text: "Pub Year" }),
           h("td", [
             h(NumericInput, {
               style: { width: "200px" },
@@ -53,13 +49,13 @@ function RefEdit() {
           ]),
         ]),
         h("tr", [
-          h("td", [h("h4.strat-name", "Ref ")]),
+          h(InfoCell, { text: "Ref" }),
           h("td", { colSpan: 3 }, [
             h(TextArea, { onChange: (e) => updateRef("ref", e.target.value) }),
           ]),
         ]),
         h("tr", [
-          h("td", [h("h4", ["DOI"])]),
+          h(InfoCell, { text: "DOI" }),
           h("td", [
             h(InputGroup, {
               style: { width: "200px" },
@@ -67,7 +63,7 @@ function RefEdit() {
               onChange: (e) => updateRef("doi", e.target.value),
             }),
           ]),
-          h("td", [h("h4", ["URL"])]),
+          h(InfoCell, { text: "URL" }),
           h("td", [
             h(InputGroup, {
               style: { width: "200px" },
@@ -78,15 +74,7 @@ function RefEdit() {
         ]),
       ]),
     ]),
-    h(
-      Button,
-      {
-        intent: "success",
-        disabled: !hasChanges(),
-        onClick: () => actions.persistChanges(),
-      },
-      ["Submit"]
-    ),
+    h(SubmitButton),
   ]);
 }
 

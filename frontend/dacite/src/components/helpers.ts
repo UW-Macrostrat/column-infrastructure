@@ -1,5 +1,10 @@
+import { QueryI } from ".";
 import { EnvironUnit, LithUnit, UnitsView } from "..";
 
+/* 
+performs a shallow difference comparison between two UnitsView objects.
+Necesary for how the ModelEditor conducts changeSet
+*/
 const conductChangeSet = (og: UnitsView, changeset: UnitsView) => {
   const changes = {};
   const keys = [
@@ -23,6 +28,10 @@ const conductChangeSet = (og: UnitsView, changeset: UnitsView) => {
   return changes;
 };
 
+/* 
+returns a list of number ids for the envs or liths to be deleted or 
+added from a unit.
+*/
 const detectDeletionsAndAdditions = (
   og: EnvironUnit[] | LithUnit[],
   changes: EnvironUnit[] | LithUnit[]
@@ -48,4 +57,20 @@ const detectDeletionsAndAdditions = (
   return { deletions, additions };
 };
 
-export { conductChangeSet, detectDeletionsAndAdditions };
+/* 
+Returns a string url for a next link that creates the query string from 
+the passed 'query' object
+*/
+const createLink = (base: string, query: QueryI) => {
+  let queryString = "?";
+  Object.entries(query).map(([key, value], i) => {
+    if (queryString == "?") {
+      queryString = queryString + `${key}=${value}`;
+    } else {
+      queryString = queryString + `&${key}=${value}`;
+    }
+  });
+  return base + queryString;
+};
+
+export { conductChangeSet, detectDeletionsAndAdditions, createLink };

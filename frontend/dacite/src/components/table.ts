@@ -1,13 +1,28 @@
-import h from "@macrostrat/hyper";
+import { hyperStyled } from "@macrostrat/hyper";
+import Link from "next/link";
 import { ReactChild } from "react";
+import styles from "./comp.module.scss";
+
+const h = hyperStyled(styles);
 
 interface RowProps {
-  onClick: (e: any) => void;
   children: ReactChild;
+  href: string;
 }
 
 function Row(props: RowProps) {
-  return h("tr", { onClick: props.onClick }, [props.children]);
+  return h(Link, { href: props.href }, [
+    h("tr", { onClick: (e: MouseEvent) => e.stopPropagation() }, [
+      props.children,
+    ]),
+  ]);
+}
+
+interface InfoCellI {
+  text: string;
+}
+function InfoCell(props: InfoCellI) {
+  return h("td", [h("h4.strat-name", [props.text])]);
 }
 
 interface TableProps {
@@ -28,4 +43,4 @@ function Table(props: TableProps) {
   ]);
 }
 
-export { Row, Table };
+export { Row, Table, InfoCell };

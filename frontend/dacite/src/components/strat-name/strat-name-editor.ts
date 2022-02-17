@@ -16,6 +16,7 @@ import {
 } from "@macrostrat/ui-components/lib/esm";
 import styles from "../comp.module.scss";
 import { RANK, StratNameI } from "../../types";
+import { CancelButton, SubmitButton } from "..";
 
 const h = hyperStyled(styles);
 
@@ -112,15 +113,8 @@ function StratNameEdit() {
         }),
       ]
     ),
-    h(
-      Button,
-      {
-        intent: "success",
-        onClick: () => actions.persistChanges(),
-        disabled: !hasChanges(),
-      },
-      ["Submit"]
-    ),
+    h(SubmitButton),
+    h(CancelButton, { href: "/units/edit" }),
   ]);
 }
 

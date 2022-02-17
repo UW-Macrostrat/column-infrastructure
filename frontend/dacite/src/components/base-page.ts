@@ -6,21 +6,23 @@ import { ReactChild } from "react";
 
 const h = hyperStyled(styles);
 
-interface IQuery {
+export interface QueryI {
   project_id?: number;
   col_id?: number;
   section_id?: number;
   unit_id?: number;
+  col_group_id?: number;
+  strat_name_id?: number;
 }
 
 interface BasePageProps {
-  query: IQuery;
+  query: QueryI;
   children: ReactChild;
 }
 
 export function BasePage(props: BasePageProps) {
   const { query } = props;
-  const { project_id, col_id, section_id, unit_id } = query;
+  const { project_id, col_id, col_group_id, section_id, unit_id } = query;
 
   console.log(query);
 
@@ -34,12 +36,12 @@ export function BasePage(props: BasePageProps) {
     },
     {
       name: "Sections",
-      href: `/column?project_id=${project_id}&col_id=${col_id}`,
+      href: `/column?project_id=${project_id}&col_group_id=${col_group_id}&col_id=${col_id}`,
       predicate: section_id,
     },
     {
       name: "Units",
-      href: `/units?project_id=${project_id}&col_id=${col_id}&section_id=${section_id}`,
+      href: `/units?project_id=${project_id}&col_group_id=${col_group_id}&col_id=${col_id}&section_id=${section_id}`,
       predicate: unit_id,
     },
   ].filter((crumb) => crumb.predicate);

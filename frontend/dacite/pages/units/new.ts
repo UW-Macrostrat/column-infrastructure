@@ -1,9 +1,6 @@
 import { hyperStyled } from "@macrostrat/hyper";
 import pg, {
   UnitsView,
-  LithUnit,
-  EnvironUnit,
-  IntervalI,
   BasePage,
   UnitEditor,
   UnitEditorModel,

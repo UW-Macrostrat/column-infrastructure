@@ -9,6 +9,7 @@ import pg, {
 import { useRouter } from "next/router";
 import styles from "./column.module.scss";
 import { Spinner } from "@blueprintjs/core";
+import { createLink } from "../../src/components/helpers";
 const h = hyperStyled(styles);
 
 const getData = (project_id: string) => {
@@ -51,7 +52,8 @@ export default function NewColumn() {
         .from("col_refs")
         .insert([ref_col]);
       if (!error) {
-        router.push(`/column-groups?project_id=${project_id}`);
+        const url = createLink("/column-groups", { project_id: project_id });
+        router.push(url);
         return e;
       } else {
         //catch errror

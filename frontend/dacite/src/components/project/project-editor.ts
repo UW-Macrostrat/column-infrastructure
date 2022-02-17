@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { hyperStyled } from "@macrostrat/hyper";
 import { Suggest, ItemRenderer, ItemPredicate } from "@blueprintjs/select";
-import { Project, TimeScale } from "../types";
+import { Project, TimeScale } from "../../types";
 import {
   Button,
   FormGroup,
@@ -17,8 +17,9 @@ import {
   ModelEditButton,
   //@ts-ignore
 } from "@macrostrat/ui-components/lib/esm";
-import styles from "./comp.module.scss";
-import pg, { usePostgrest } from "..";
+import styles from "../comp.module.scss";
+import pg, { usePostgrest } from "../..";
+import { CancelButton, SubmitButton } from "..";
 
 const h = hyperStyled(styles);
 interface TimeScaleSuggestProps {
@@ -28,7 +29,7 @@ interface TimeScaleSuggestProps {
   timescales: TimeScale[];
 }
 
-const InterSuggest = Suggest.ofType<TimeScale>();
+const TimeSuggest = Suggest.ofType<TimeScale>();
 
 function TimeScaleSuggest(props: TimeScaleSuggestProps) {
   const selected_ = props.timescales.filter(
@@ -71,7 +72,7 @@ function TimeScaleSuggest(props: TimeScaleSuggestProps) {
     props.onChange(item);
   };
   //@ts-ignore
-  return h(InterSuggest, {
+  return h(TimeSuggest, {
     inputValueRenderer: (item: TimeScale) => item.timescale,
     items: itemz.slice(0, 200),
     popoverProps: {
@@ -120,7 +121,6 @@ function ProjectEdit() {
       {
         helperText: "Add a name to your project",
         label: "Project Name",
-        labelFor: "project-input",
         labelInfo: "(required)",
       },
       [
@@ -136,7 +136,6 @@ function ProjectEdit() {
       {
         helperText: "Add a description to your project",
         label: "Project Description",
-        labelFor: "descrip-input",
         labelInfo: "(recommended)",
       },
       [
@@ -152,7 +151,6 @@ function ProjectEdit() {
       {
         helperText: "Most projects use International Ages",
         label: "Project Timescale",
-        labelFor: "timescale-input",
         labelInfo: "(required)",
       },
       [
@@ -164,15 +162,8 @@ function ProjectEdit() {
         }),
       ]
     ),
-    h(
-      Button,
-      {
-        intent: "success",
-        onClick: () => actions.persistChanges(),
-        disabled: !hasChanges(),
-      },
-      ["Submit"]
-    ),
+    h(SubmitButton),
+    h(CancelButton, { href: "/" }),
   ]);
 }
 

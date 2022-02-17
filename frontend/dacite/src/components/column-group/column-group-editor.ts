@@ -1,13 +1,14 @@
 import { hyperStyled } from "@macrostrat/hyper";
-import { ColumnGroupI } from "../types";
-import { Button, FormGroup, InputGroup } from "@blueprintjs/core";
+import { ColumnGroupI } from "../../types";
+import { FormGroup, InputGroup } from "@blueprintjs/core";
 import {
   ModelEditor,
   useModelEditor,
   ModelEditButton,
   //@ts-ignore
 } from "@macrostrat/ui-components/lib/esm";
-import styles from "./comp.module.scss";
+import styles from "../comp.module.scss";
+import { CancelButton, SubmitButton } from "..";
 
 const h = hyperStyled(styles);
 
@@ -69,15 +70,8 @@ function ColumnGroupEdit() {
         }),
       ]
     ),
-    h(
-      Button,
-      {
-        intent: "success",
-        onClick: () => actions.persistChanges(),
-        disabled: !hasChanges(),
-      },
-      ["Submit"]
-    ),
+    h(SubmitButton),
+    h(CancelButton, { href: "/column-groups" }),
   ]);
 }
 

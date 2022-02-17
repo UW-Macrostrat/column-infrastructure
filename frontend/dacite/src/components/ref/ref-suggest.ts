@@ -2,8 +2,8 @@ import { useState } from "react";
 import { hyperStyled } from "@macrostrat/hyper";
 import { Suggest, ItemRenderer, ItemPredicate } from "@blueprintjs/select";
 import { MenuItem, Icon } from "@blueprintjs/core";
-import styles from "./comp.module.scss";
-import { RefI } from "..";
+import styles from "../comp.module.scss";
+import { RefI } from "../..";
 
 const h = hyperStyled(styles);
 

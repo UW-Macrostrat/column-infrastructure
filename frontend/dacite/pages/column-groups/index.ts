@@ -1,4 +1,3 @@
-import { Button } from "@blueprintjs/core";
 import h from "@macrostrat/hyper";
 import { useRouter } from "next/router";
 import pg, {
@@ -8,7 +7,9 @@ import pg, {
   Row,
   BasePage,
   Table,
-} from "../src";
+  CreateButton,
+  EditButton,
+} from "../../src";
 
 export default function ColumnGroup() {
   const router = useRouter();
@@ -31,26 +32,13 @@ export default function ColumnGroup() {
   if (!columnGroups || !projects) return h("div");
   const project = projects[0];
 
-  const onClick = (col_id: number, col_group_id: number) => {
-    router.push(
-      `/column?project_id=${project_id}&col_group_id=${col_group_id}&col_id=${col_id}`
-    );
-  };
   return h(BasePage, { query: router.query }, [
     h("h3", [
       project.project,
-      h(
-        Button,
-        {
-          minimal: true,
-          intent: "success",
-          onClick: () =>
-            router.push(
-              `/column-groups/new?project_id=${project_id}&col_id=null`
-            ),
-        },
-        ["Add New Group"]
-      ),
+      h(CreateButton, {
+        href: `/column-groups/new?project_id=${project_id}&col_id=null`,
+        text: "Add New Group",
+      }),
     ]),
     h("div", { style: { display: "flex", flexWrap: "wrap" } }, [
       columnGroups.map((colGroup, i) => {
@@ -60,15 +48,9 @@ export default function ColumnGroup() {
           [
             h("div.col-group-name", [
               h("h3", { style: { margin: 0 } }, colGroup.col_group_long),
-              h(Button, {
-                minimal: true,
+              h(EditButton, {
                 small: true,
-                intent: "success",
-                icon: "edit",
-                onClick: () =>
-                  router.push(
-                    `/column-groups/edit?project_id=${project.id}&col_group_id=${colGroup.id}&col_id=null`
-                  ),
+                href: `/column-groups/edit?project_id=${project.id}&col_group_id=${colGroup.id}`,
               }),
             ]),
             h(Table, { interactive: true }, [
@@ -84,7 +66,10 @@ export default function ColumnGroup() {
                 colGroup.cols.map((id, i) => {
                   return h(
                     Row,
-                    { key: i, onClick: () => onClick(id.col_id, colGroup.id) },
+                    {
+                      key: i,
+                      href: `/column?project_id=${project_id}&col_group_id=${colGroup.id}&col_id=${id.col_id}`,
+                    },
                     [
                       h("td", [id.col_id]),
                       h("td", [id.col_name]),
@@ -95,19 +80,10 @@ export default function ColumnGroup() {
                 }),
               ]),
             ]),
-            h(
-              Button,
-              {
-                fill: true,
-                minimal: true,
-                intent: "success",
-                onClick: () =>
-                  router.push(
-                    `/column/new?project_id=${project.id}&col_group_id=${colGroup.id}&col_id=null`
-                  ),
-              },
-              ["Add New Column"]
-            ),
+            h(CreateButton, {
+              href: `/column/new?project_id=${project.id}&col_group_id=${colGroup.id}&col_id=null`,
+              text: "Add New Column",
+            }),
           ]
         );
       }),

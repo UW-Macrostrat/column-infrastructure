@@ -1,8 +1,21 @@
-import { Button } from "@blueprintjs/core";
 import h from "@macrostrat/hyper";
 import { useRouter } from "next/router";
-import pg, { usePostgrest, IColumnSection, Row, BasePage, Table } from "../src";
+import pg, {
+  usePostgrest,
+  IColumnSection,
+  Row,
+  BasePage,
+  Table,
+  EditButton,
+  CreateButton,
+} from "../../src";
+import { createLink } from "../../src/components/helpers";
 
+/* 
+Creates section arrays by finding the lowest posistion_bottom and highest
+position_bottom. Sets a bottom and top strat_name based on this 
+sorting. 
+*/
 function dataPreProcess(col_id: any) {
   const colSections: IColumnSection[] = usePostgrest(
     pg
@@ -13,6 +26,11 @@ function dataPreProcess(col_id: any) {
   if (!colSections) return [];
   const col_name = colSections[0]["col_name"];
   let data: any = {};
+  /* 
+  Create a unique object for each section
+  and calculate the highest and lowest strat_name
+  */
+
   colSections.forEach((col) => {
     const { section_id, position_bottom, top, bottom } = col;
     if (!data[section_id]) {
@@ -55,40 +73,27 @@ export default function ColumnGroup() {
   if (!data) return h("div");
   const headers = Object.keys(data[0]);
 
-  const onClick = (col) => {
-    router.push(
-      `/units?project_id=${project_id}&col_id=${col_id}&section_id=${col.section_id}`
-    );
-  };
   return h(BasePage, { query: router.query }, [
     h("h3", [
       `Sections for ${col_name}`,
-      h(Button, {
-        intent: "success",
-        minimal: true,
-        icon: "edit",
-        onClick: () => {
-          router.push(
-            `/column/edit?project_id=${project_id}&col_group_id=${col_group_id}&col_id=${col_id}`
-          );
-        },
+      h(EditButton, {
+        href: createLink("/column/edit", {
+          ...router.query,
+        }),
       }),
     ]),
     h.if(data.filter((d) => d.section_id != undefined).length == 0)("div", [
       h("h3", [
         "Looks like there are no sections or units. To begin create a new unit",
       ]),
-      h(
-        Button,
-        {
-          intent: "success",
-          onClick: () =>
-            router.push(
-              `/units/new?project_id=${project_id}&col_id=${col_id}&section_id=null`
-            ),
-        },
-        ["Create Unit"]
-      ),
+      h(CreateButton, {
+        minimal: false,
+        href: createLink("/units/new", {
+          ...router.query,
+          section_id: undefined,
+        }),
+        text: "Create Unit",
+      }),
     ]),
     h.if(data.filter((d) => d.section_id != undefined).length > 0)(
       Table,
@@ -103,12 +108,22 @@ export default function ColumnGroup() {
         ]),
         h("tbody", [
           data.map((col, i) => {
-            return h(Row, { key: i, onClick: () => onClick(col) }, [
-              h("td", [col.section_id]),
-              h("td", [col.top]),
-              h("td", [col.bottom]),
-              h("td", [h("a", `view ${col.units} units`)]),
-            ]);
+            return h(
+              Row,
+              {
+                key: i,
+                href: createLink("/units", {
+                  ...router.query,
+                  section_id: col.section_id,
+                }),
+              },
+              [
+                h("td", [col.section_id]),
+                h("td", [col.top]),
+                h("td", [col.bottom]),
+                h("td", [h("a", `view ${col.units} units`)]),
+              ]
+            );
           }),
         ]),
       ]

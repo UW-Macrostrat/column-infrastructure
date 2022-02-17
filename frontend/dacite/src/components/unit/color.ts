@@ -1,7 +1,7 @@
 import { hyperStyled } from "@macrostrat/hyper";
 import { ChromePicker } from "react-color";
 import { Popover2 } from "@blueprintjs/popover2";
-import styles from "./comp.module.scss";
+import styles from "../comp.module.scss";
 
 const h = hyperStyled(styles);
 
