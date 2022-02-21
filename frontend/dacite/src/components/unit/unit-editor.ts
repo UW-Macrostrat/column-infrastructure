@@ -5,8 +5,8 @@ import {
   UnitsView,
   LithUnit,
   EnvironUnit,
-  IntervalI,
   IntervalRow,
+  IntervalDataI,
   TagContainerCell,
   ColorBlock,
   Table,
@@ -202,8 +202,9 @@ function UnitEdit() {
     actions.updateState({ model: { unit: { [field]: { $set: e } } } });
   };
 
-  const onChangeLo = (interval: IntervalI) => {
-    const { id: lo, interval_name: name_lo, age_top } = interval;
+  const onChangeLo = (interval: IntervalDataI) => {
+    const { data } = interval;
+    const { id: lo, interval_name: name_lo, age_top } = data;
     actions.updateState({
       model: {
         unit: {
@@ -215,8 +216,9 @@ function UnitEdit() {
     });
   };
 
-  const onChangeFo = (interval: IntervalI) => {
-    const { id: fo, interval_name: name_fo, age_bottom } = interval;
+  const onChangeFo = (interval: IntervalDataI) => {
+    const { data } = interval;
+    const { id: fo, interval_name: name_fo, age_bottom } = data;
     actions.updateState({
       model: {
         unit: {
@@ -236,8 +238,8 @@ function UnitEdit() {
           h(IntervalRow, {
             age_top: unit?.age_top,
             initialSelected: {
-              id: unit?.lo || 0,
-              interval_name: unit?.name_lo,
+              value: unit?.name_lo,
+              data: { id: unit?.lo || 0, interval_name: unit?.name_lo },
             },
             onChange: onChangeLo,
           }),
@@ -250,8 +252,11 @@ function UnitEdit() {
           h(IntervalRow, {
             age_bottom: unit?.age_bottom,
             initialSelected: {
-              id: unit?.fo || 0,
-              interval_name: unit?.name_fo,
+              value: unit?.name_fo,
+              data: {
+                id: unit?.fo || 0,
+                interval_name: unit?.name_fo,
+              },
             },
             onChange: onChangeFo,
           }),

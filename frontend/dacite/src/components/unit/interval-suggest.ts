@@ -1,73 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { hyperStyled } from "@macrostrat/hyper";
-import { Suggest, ItemRenderer, ItemPredicate } from "@blueprintjs/select";
-import { MenuItem, Icon, Spinner } from "@blueprintjs/core";
+import { Spinner } from "@blueprintjs/core";
 import { IntervalI } from "../../types";
 import { InfoCell } from "..";
 import pg from "../../db";
 import styles from "../comp.module.scss";
+import { MySuggest } from "../suggest";
 
 const h = hyperStyled(styles);
 
 interface IntervalProps {
-  onChange: (e: IntervalI) => void;
-  initialSelected?: Partial<IntervalI>;
+  onChange: (e: IntervalDataI) => void;
+  initialSelected?: IntervalDataI;
   onQueryChange?: (e: string) => void;
 }
 
-interface IntervalSuggestProps extends IntervalProps {
-  intervals: IntervalI[];
-}
-
-const InterSuggest = Suggest.ofType<IntervalI>();
-
-function IntervalSuggest(props: IntervalSuggestProps) {
-  const [selected, setSelected] = useState(props.initialSelected);
-  let itemz = [...props.intervals];
-
-  const itemRenderer: ItemRenderer<IntervalI> = (
-    item: IntervalI,
-    { handleClick }
-  ) => {
-    const { id, interval_name } = item;
-    const active = selected?.interval_name == interval_name;
-    return h(MenuItem, {
-      key: id,
-      labelElement: active ? h(Icon, { icon: "tick" }) : null,
-      text: interval_name,
-      onClick: handleClick,
-      active: active,
-    });
-  };
-
-  const itemPredicate: ItemPredicate<IntervalI> = (
-    query: string,
-    item: IntervalI
-  ) => {
-    const { id, interval_name } = item;
-
-    return interval_name.toLowerCase().indexOf(query.toLowerCase()) >= 0;
-  };
-
-  const onItemSelect = (item: IntervalI) => {
-    setSelected(item);
-    props.onChange(item);
-  };
-  //@ts-ignore
-  return h(InterSuggest, {
-    inputValueRenderer: (item: IntervalI) => item.interval_name,
-    items: itemz.slice(0, 200),
-    popoverProps: {
-      minimal: true,
-      popoverClassName: styles.mySuggest,
-    },
-    selectedItem: selected,
-    onItemSelect: onItemSelect,
-    itemRenderer: itemRenderer,
-    itemPredicate: itemPredicate,
-    onQueryChange: props.onQueryChange,
-    resetOnQuery: true,
-  });
+export interface IntervalDataI {
+  value: string;
+  data: IntervalI | Partial<IntervalI>;
 }
 
 interface IntervalRowProps extends IntervalProps {
@@ -76,7 +26,7 @@ interface IntervalRowProps extends IntervalProps {
 }
 
 function IntervalRow(props: IntervalRowProps) {
-  const [intervals, setIntervals] = useState([]);
+  const [intervals, setIntervals] = useState<IntervalDataI[] | []>([]);
   const getIntervals = async (query: string) => {
     if (query.length > 2) {
       const { data, error } = await pg
@@ -84,13 +34,19 @@ function IntervalRow(props: IntervalRowProps) {
         .select()
         .like("interval_name", `%${query}%`)
         .limit(200);
-      setIntervals(data);
+      const d = data?.map((d: IntervalI) => {
+        return { value: d.interval_name, data: d };
+      });
+      setIntervals(d);
     } else {
       const { data, error } = await pg
         .from("intervals")
         .select()
         .limit(50);
-      setIntervals(data);
+      const d = data?.map((d: IntervalI) => {
+        return { value: d.interval_name, data: d };
+      });
+      setIntervals(d);
     }
   };
 
@@ -100,7 +56,10 @@ function IntervalRow(props: IntervalRowProps) {
         .from("intervals")
         .select()
         .limit(50);
-      setIntervals(data);
+      const d = data?.map((d: IntervalI) => {
+        return { value: d.interval_name, data: d };
+      });
+      setIntervals(d);
     };
     getData();
   }, []);
@@ -113,8 +72,8 @@ function IntervalRow(props: IntervalRowProps) {
     h(InfoCell, { text: label }),
     h("td", [
       h.if(intervals == undefined)(Spinner),
-      h.if(intervals != undefined)(IntervalSuggest, {
-        intervals: intervals,
+      h.if(intervals != undefined)(MySuggest, {
+        items: intervals,
         onChange: props.onChange,
         onQueryChange: getIntervals,
         initialSelected: props.initialSelected,

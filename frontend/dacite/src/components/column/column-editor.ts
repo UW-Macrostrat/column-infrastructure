@@ -16,7 +16,7 @@ import {
 } from "@macrostrat/ui-components/lib/esm";
 import styles from "../comp.module.scss";
 import { ColumnForm, ColumnGroupI } from "../../types";
-import { RefSuggest } from "../ref/ref-suggest";
+import { MySuggest } from "../suggest";
 import { RefI } from "../../types";
 import pg, { usePostgrest } from "../../db";
 import { RefEditor } from "../ref/ref-editor";
@@ -28,6 +28,11 @@ interface Model {
   model: ColumnForm;
   actions: any;
   hasChanges: () => boolean;
+}
+
+interface RefDataI {
+  value: string;
+  data: RefI;
 }
 
 function ColumnRef() {
@@ -44,12 +49,21 @@ function ColumnRef() {
     setOpen(!open);
   };
 
-  const onChange = (item: RefI) => {
-    actions.updateState({ model: { ref: { $set: item } } });
+  const onChange = (item: RefDataI) => {
+    actions.updateState({ model: { ref: { $set: item.data } } });
   };
   // have the ref suggest as well as option to create new ref.
   return h("div", [
-    h(RefSuggest, { refs, initialSelected: model.ref, onChange }),
+    h(MySuggest, {
+      items: refs.map((ref) => {
+        return { value: `${ref.author}(${ref.pub_year})`, data: ref };
+      }),
+      initialSelected: {
+        value: `${model.ref.author}(${model.ref.pub_year})`,
+        data: model.ref,
+      },
+      onChange,
+    }),
     h(Button, { onClick }, ["New Ref"]),
     h(Collapse, { isOpen: open }, [h(NewRef)]),
   ]);

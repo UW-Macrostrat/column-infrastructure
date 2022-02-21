@@ -17,6 +17,7 @@ import {
 import styles from "../comp.module.scss";
 import { RANK, StratNameI } from "../../types";
 import { CancelButton, SubmitButton } from "..";
+import { StratNameDataI } from ".";
 
 const h = hyperStyled(styles);
 
@@ -73,8 +74,6 @@ Add to a concept
 function StratNameEdit() {
   const { model, actions, hasChanges }: Model = useModelEditor();
 
-  console.log(model);
-
   const updateStratName = (field: string, e: any) => {
     actions.updateState({ model: { [field]: { $set: e } } });
   };
@@ -108,8 +107,13 @@ function StratNameEdit() {
       },
       [
         h(StratNameCell, {
-          onChange: (e) => updateStratName("parent", e),
-          initialSelected: model.parent,
+          onChange: (item: StratNameDataI) => {
+            updateStratName("parent", item.data);
+          },
+          initialSelected: {
+            value: model.parent?.strat_name,
+            data: model.parent,
+          },
         }),
       ]
     ),
