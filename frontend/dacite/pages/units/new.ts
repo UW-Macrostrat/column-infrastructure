@@ -22,6 +22,7 @@ const keys = [
   "min_thick",
   "section_id",
   "col_id",
+  "notes",
 ];
 
 /* 
@@ -39,14 +40,28 @@ function NewUnit() {
     updatedModel: UnitEditorModel,
     changeSet: Partial<UnitEditorModel>
   ) => {
+    let s_id = section_id;
+    if (s_id == null || s_id == "undefined") {
+      // we're making a new section with this unit
+      const { data, error } = await pg
+        .from("sections")
+        .insert([{ col_id: col_id }]);
+      console.log("section!!", data);
+      s_id = data ? data[0].id : null;
+    }
     console.log(updatedModel, changeSet);
     let unit_id: number;
 
     const unit: Partial<UnitsView> = {};
     keys.map((k) => {
-      //@ts-ignore
-      unit[k] = changeSet.unit[k];
+      if (k == "strat_name") {
+        unit.strat_name_id = changeSet.unit?.strat_name.id;
+      } else {
+        //@ts-ignore
+        unit[k] = changeSet.unit[k];
+      }
     });
+    unit.section_id = s_id;
     const { data, error } = await pg
       .from("units")
       .insert([{ col_id: col_id, ...unit }]);

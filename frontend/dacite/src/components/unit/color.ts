@@ -21,7 +21,7 @@ function ColorBlock(props: ColorProps) {
       {
         content: h(ChromePicker, {
           onChange: onChange,
-          color: props.color,
+          color: props.color ? props.color : "black",
         }),
       },
       [h("div.color-block", { style: { backgroundColor: props.color } })]

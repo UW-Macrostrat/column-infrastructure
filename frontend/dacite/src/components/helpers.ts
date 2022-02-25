@@ -19,9 +19,12 @@ const conductChangeSet = (og: UnitsView, changeset: UnitsView) => {
     "min_thick",
     "section_id",
     "col_id",
+    "notes",
   ];
   Object.entries(og).map(([key, val], i) => {
-    if (changeset[key] && changeset[key] != val && keys.includes(key)) {
+    if (key == "strat_name") {
+      changes.strat_name_id = changeset.strat_name.id;
+    } else if (changeset[key] && changeset[key] != val && keys.includes(key)) {
       changes[key] = changeset[key];
     }
   });

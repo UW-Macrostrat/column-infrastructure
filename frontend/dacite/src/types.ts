@@ -32,6 +32,7 @@ export interface ColumnForm {
   col_id: number;
   col_name: string;
   col_number: number;
+  notes?: string;
   ref: RefI;
 }
 
@@ -55,9 +56,7 @@ export interface IColumnSection extends ICol {
 export interface UnitsView {
   id: number;
   unit_strat_name: string;
-  strat_name: string;
-  strat_name_id: number;
-  rank: string;
+  strat_name: StratNameI;
   color: string;
   outcrop?: string;
   fo?: number;
@@ -68,6 +67,7 @@ export interface UnitsView {
   age_top: number;
   section_id: number;
   col_id: number;
+  notes?: string;
   position_bottom: number;
   position_top: number;
   max_thick: number;
@@ -124,5 +124,4 @@ export interface StratNameI {
   rank: RANK;
   ref_id: number;
   concept_id?: number;
-  parent?: StratNameI;
 }

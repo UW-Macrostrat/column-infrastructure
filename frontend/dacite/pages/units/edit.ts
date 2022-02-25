@@ -8,7 +8,10 @@ import pg, {
   BasePage,
   UnitEditor,
 } from "../../src";
-import { conductChangeSet, detectDeletionsAndAdditions } from "../../src/components/helpers";
+import {
+  conductChangeSet,
+  detectDeletionsAndAdditions,
+} from "../../src/components/helpers";
 import { useRouter } from "next/router";
 import { Spinner } from "@blueprintjs/core";
 import styles from "./units.module.scss";
@@ -106,7 +109,11 @@ function UnitEdit() {
   };
 
   return h(BasePage, { query: router.query }, [
-    h("h3", ["Edit Unit: ", unit.strat_name]),
+    h("h3", [
+      "Edit Unit: ",
+      unit.unit_strat_name ||
+        `${unit.strat_name?.strat_name} ${unit.strat_name.rank}`,
+    ]),
     //@ts-ignore
     h(UnitEditor, { model, persistChanges }),
   ]);

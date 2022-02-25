@@ -43,7 +43,7 @@ interface StratCellProps {
   onChange: (item: StratNameDataI) => void;
 }
 
-function StratNameCell(props: StratCellProps) {
+function StratNameSuggest(props: StratCellProps) {
   const [names, setNames] = useState<StratNameDataI[]>([]);
 
   const onQueryChange = (i: string) => {
@@ -62,4 +62,4 @@ function StratNameCell(props: StratCellProps) {
   });
 }
 
-export { StratNameCell };
+export { StratNameSuggest };

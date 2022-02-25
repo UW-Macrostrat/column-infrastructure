@@ -6,6 +6,7 @@ import {
   NumericInput,
   Collapse,
   InputGroup,
+  TextArea,
   Spinner,
 } from "@blueprintjs/core";
 import {
@@ -56,11 +57,11 @@ function ColumnRef() {
   return h("div", [
     h(MySuggest, {
       items: refs.map((ref) => {
-        return { value: `${ref.author}(${ref.pub_year})`, data: ref };
+        return { value: `${ref?.author}(${ref?.pub_year})`, data: ref };
       }),
       initialSelected: {
-        value: `${model.ref.author}(${model.ref.pub_year})`,
-        data: model.ref,
+        value: model.ref ? `${model.ref.author}(${model.ref.pub_year})` : "",
+        data: model.ref || {},
       },
       onChange,
     }),
@@ -98,6 +99,10 @@ function ColumnEdit({ curColGroup }: { curColGroup: Partial<ColumnGroupI> }) {
     h(Table, { interactive: false }, [
       h("tbody", [
         h("tr", [
+          h("td", [h("h4", ["Column Group"])]),
+          h("td", [curColGroup.col_group]),
+        ]),
+        h("tr", [
           h("td", [h("h4", ["Column Name"])]),
           h("td", [
             h(InputGroup, {
@@ -118,8 +123,13 @@ function ColumnEdit({ curColGroup }: { curColGroup: Partial<ColumnGroupI> }) {
           ]),
         ]),
         h("tr", [
-          h("td", [h("h4", ["Column Group"])]),
-          h("td", [curColGroup.col_group]),
+          h("td", [h("h4", ["Notes"])]),
+          h("td", [
+            h(TextArea, {
+              value: model.notes,
+              onChange: (e) => updateColumn("notes", e.target.value),
+            }),
+          ]),
         ]),
         h("tr", [h("td", [h("h4", ["Ref"])]), h("td", [h(ColumnRef)])]),
       ]),
