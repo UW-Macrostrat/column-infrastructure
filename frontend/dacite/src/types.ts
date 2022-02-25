@@ -32,6 +32,7 @@ export interface ColumnForm {
   col_id: number;
   col_name: string;
   col_number: number;
+  notes?: string;
   ref: RefI;
 }
 
@@ -68,6 +69,7 @@ export interface UnitsView {
   age_top: number;
   section_id: number;
   col_id: number;
+  notes?: string;
   position_bottom: number;
   position_top: number;
   max_thick: number;
