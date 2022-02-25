@@ -30,7 +30,7 @@ function dataPreProcess(col_id: any) {
   Create a unique object for each section
   and calculate the highest and lowest strat_name
   */
-
+  console.log(colSections);
   colSections.forEach((col) => {
     const { section_id, position_bottom, top, bottom } = col;
     if (!data[section_id]) {
@@ -55,6 +55,7 @@ function dataPreProcess(col_id: any) {
       data[section_id]["units"]++;
     }
   });
+  console.log("data", data);
   data = Object.values(data).map((section: any) => {
     delete section["lowest"];
     delete section["highest"];
@@ -69,6 +70,7 @@ export default function ColumnGroup() {
   if (!col_id) return h("div");
 
   const { data, col_name } = dataPreProcess(col_id);
+  console.log("data", data);
 
   if (!data) return h("div");
   const headers = Object.keys(data[0]);
@@ -82,7 +84,7 @@ export default function ColumnGroup() {
         }),
       }),
     ]),
-    h.if(data.filter((d) => d.section_id != undefined).length == 0)("div", [
+    h.if(data.filter((d) => d.top != undefined).length == 0)("div", [
       h("h3", [
         "Looks like there are no sections or units. To begin create a new unit",
       ]),
@@ -95,7 +97,7 @@ export default function ColumnGroup() {
         text: "Create Unit",
       }),
     ]),
-    h.if(data.filter((d) => d.section_id != undefined).length > 0)(
+    h.if(data.filter((d) => d.top != undefined).length > 0)(
       Table,
       { interactive: true },
       [

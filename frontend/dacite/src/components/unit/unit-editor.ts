@@ -196,7 +196,7 @@ Tags for liths and environs; adding components for those too.
 function UnitEdit() {
   const { model, hasChanges, actions, ...rest } = useModelEditor();
   console.log(model, actions, rest);
-  const { unit } = model;
+  const { unit }: { unit: UnitsView } = model;
 
   const updateUnit = (field: string, e: any) => {
     actions.updateState({ model: { unit: { [field]: { $set: e } } } });
@@ -281,7 +281,12 @@ function UnitEdit() {
         ]),
         h("tr", [
           h(InfoCell, { text: "Notes: " }),
-          h("td", { colSpan: 5 }, [h(TextArea)]),
+          h("td", { colSpan: 5 }, [
+            h(TextArea, {
+              value: unit.notes,
+              onChange: (e) => updateUnit("notes", e.target.value),
+            }),
+          ]),
         ]),
         h("tr", [
           h(InfoCell, { text: "Lithologies: " }),
