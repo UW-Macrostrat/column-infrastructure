@@ -22,6 +22,7 @@ function dataPreProcess(col_id: any) {
       .from("col_sections")
       .select()
       .match({ col_id })
+    // .not("section_id", "is", null)
   );
   if (!colSections) return [];
   const col_name = colSections[0]["col_name"];
@@ -75,6 +76,8 @@ export default function ColumnGroup() {
   if (!data) return h("div");
   const headers = Object.keys(data[0]);
 
+  let dat = data.filter((d) => d.section_id != null);
+
   return h(BasePage, { query: router.query }, [
     h("h3", [
       `Sections for ${col_name}`,
@@ -84,7 +87,7 @@ export default function ColumnGroup() {
         }),
       }),
     ]),
-    h.if(data.filter((d) => d.top != undefined).length == 0)("div", [
+    h.if(dat.filter((d) => d.section_id != null).length == 0)("div", [
       h("h3", [
         "Looks like there are no sections or units. To begin create a new unit",
       ]),
@@ -97,10 +100,8 @@ export default function ColumnGroup() {
         text: "Create Unit",
       }),
     ]),
-    h.if(data.filter((d) => d.top != undefined).length > 0)(
-      Table,
-      { interactive: true },
-      [
+    h.if(dat.filter((d) => d.section_id != null).length > 0)("div", [
+      h(Table, { interactive: true }, [
         h("thead", [
           h("tr", [
             headers.map((head, i) => {
@@ -109,7 +110,7 @@ export default function ColumnGroup() {
           ]),
         ]),
         h("tbody", [
-          data.map((col, i) => {
+          dat.map((col, i) => {
             return h(
               Row,
               {
@@ -128,7 +129,15 @@ export default function ColumnGroup() {
             );
           }),
         ]),
-      ]
-    ),
+      ]),
+      h(CreateButton, {
+        minimal: false,
+        href: createLink("/units/new", {
+          ...router.query,
+          section_id: undefined,
+        }),
+        text: "Create Unit in new Section",
+      }),
+    ]),
   ]);
 }

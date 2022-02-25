@@ -23,6 +23,7 @@ export interface IntervalDataI {
 interface IntervalRowProps extends IntervalProps {
   age_bottom?: number;
   age_top?: number;
+  bottom: boolean;
 }
 
 function IntervalRow(props: IntervalRowProps) {
@@ -64,9 +65,9 @@ function IntervalRow(props: IntervalRowProps) {
     getData();
   }, []);
 
-  const label: string = props.age_top ? "Top (LO): " : "Bottom (FO): ";
+  const label: string = !props.bottom ? "Top (LO): " : "Bottom (FO): ";
 
-  const ageLabel: string = props.age_bottom ? "Age Bottom: " : "Age Top: ";
+  const ageLabel: string = props.bottom ? "Age Bottom: " : "Age Top: ";
 
   return h(React.Fragment, [
     h(InfoCell, { text: label }),

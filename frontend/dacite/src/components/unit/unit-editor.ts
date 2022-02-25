@@ -28,6 +28,8 @@ import {
   EnvTagsAdd,
   InfoCell,
   LithTagsAdd,
+  StratNameDataI,
+  StratNameSuggest,
   SubmitButton,
 } from "..";
 import { createLink } from "../helpers";
@@ -129,14 +131,14 @@ function UnitThickness() {
     h("td", [
       h(NumericInput, {
         onValueChange: (e) => update("min_thick", e),
-        defaultValue: unit?.min_thick,
+        defaultValue: unit?.min_thick || undefined,
       }),
     ]),
     h(InfoCell, { text: "Max-Thick: " }),
     h("td", [
       h(NumericInput, {
         onValueChange: (e) => update("max_thick", e),
-        defaultValue: unit?.max_thick,
+        defaultValue: unit?.max_thick || undefined,
       }),
     ]),
   ]);
@@ -144,20 +146,34 @@ function UnitThickness() {
 
 function StratName() {
   const router = useRouter();
-  const { model } = useModelEditor();
+  const { model, actions } = useModelEditor();
   const { unit }: UnitEditorModel = model;
 
-  const href = unit.strat_name_id
+  const href = unit.strat_name
     ? createLink(`/strat-name/edit`, {
         ...router.query,
-        strat_name_id: unit.strat_name_id,
+        strat_name_id: unit.strat_name.id,
       })
     : "new";
+
+  const initialSelected: StratNameDataI | undefined = unit?.strat_name
+    ? {
+        value: unit.unit_strat_name || unit.strat_name.strat_name,
+        data: unit.strat_name,
+      }
+    : undefined;
+
+  const updateStratName = (e: StratNameDataI) => {
+    actions.updateState({ model: { unit: { strat_name: { $set: e.data } } } });
+  };
 
   return h("tr", [
     h(InfoCell, { text: "Stratigraphic Name: " }),
     h("td", [
-      unit?.strat_name || unit.unit_strat_name || "Unnamed",
+      h(StratNameSuggest, {
+        initialSelected,
+        onChange: updateStratName,
+      }),
       h(Link, { href }, [
         h("a", { style: { fontSize: "10px" } }, ["(modify)"]),
       ]),
@@ -166,13 +182,14 @@ function StratName() {
 }
 
 interface UnitPositionI {
+  bottom: boolean;
   position_bottom?: number;
   position_top?: number;
   onPositionChange: (e: number) => void;
 }
 
 function UnitPosition(props: UnitPositionI) {
-  const positionLabel: string = props.position_bottom
+  const positionLabel: string = props.bottom
     ? "Position Bottom: "
     : "Position Top: ";
 
@@ -236,6 +253,7 @@ function UnitEdit() {
         h(StratName),
         h("tr", [
           h(IntervalRow, {
+            bottom: false,
             age_top: unit?.age_top,
             initialSelected: {
               value: unit?.name_lo,
@@ -244,12 +262,14 @@ function UnitEdit() {
             onChange: onChangeLo,
           }),
           h(UnitPosition, {
+            bottom: false,
             onPositionChange: (e) => updateUnit("position_top", e),
-            position_top: unit?.position_top,
+            position_top: unit?.position_top || undefined,
           }),
         ]),
         h("tr", [
           h(IntervalRow, {
+            bottom: true,
             age_bottom: unit?.age_bottom,
             initialSelected: {
               value: unit?.name_fo,
@@ -261,8 +281,9 @@ function UnitEdit() {
             onChange: onChangeFo,
           }),
           h(UnitPosition, {
+            bottom: true,
             onPositionChange: (e) => updateUnit("position_bottom", e),
-            position_bottom: unit?.position_bottom,
+            position_bottom: unit?.position_bottom || undefined,
           }),
         ]),
         h("tr", [

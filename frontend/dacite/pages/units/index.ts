@@ -60,7 +60,7 @@ function Units() {
               h("td", [unit.id]),
               h("td", [
                 unit.strat_name
-                  ? `${unit.strat_name} ${unit.rank}`
+                  ? `${unit.strat_name.strat_name} ${unit.strat_name.rank}`
                   : unit.unit_strat_name || "unnamed",
               ]),
               h("td", [unit.name_fo]),

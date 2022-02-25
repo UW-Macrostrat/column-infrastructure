@@ -1,5 +1,5 @@
 import { hyperStyled } from "@macrostrat/hyper";
-import { StratNameCell } from "../../index";
+import { StratNameSuggest } from "../../index";
 import { Select, ItemRenderer } from "@blueprintjs/select";
 import {
   Button,
@@ -106,7 +106,7 @@ function StratNameEdit() {
         labelFor: "descrip-input",
       },
       [
-        h(StratNameCell, {
+        h(StratNameSuggest, {
           onChange: (item: StratNameDataI) => {
             updateStratName("parent", item.data);
           },
