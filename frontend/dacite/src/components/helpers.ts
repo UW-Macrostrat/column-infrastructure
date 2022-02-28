@@ -3,7 +3,10 @@ import { EnvironUnit, LithUnit, UnitsView } from "..";
 
 /* 
 performs a shallow difference comparison between two UnitsView objects.
-Necesary for how the ModelEditor conducts changeSet
+The model for the unit-editor has Units as a sub-object. Therefore, the 
+calculated changest for units will always be the entire object even when
+only one attribute has been changed. This funciton just allows us to calculate
+the changes in the sub-object of the units.
 */
 const conductChangeSet = (og: UnitsView, changeset: UnitsView) => {
   const changes = {};
@@ -34,6 +37,8 @@ const conductChangeSet = (og: UnitsView, changeset: UnitsView) => {
 /* 
 returns a list of number ids for the envs or liths to be deleted or 
 added from a unit.
+
+Otherwise it's impossible to detect if a user has removed envs or liths
 */
 const detectDeletionsAndAdditions = (
   og: EnvironUnit[] | LithUnit[],

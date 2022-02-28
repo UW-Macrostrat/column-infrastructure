@@ -21,11 +21,12 @@ interface BasePageProps {
   children: ReactChild;
 }
 
+/* 
+Creates the breadcrumbs at the top of each page based on the router query
+*/
 export function BasePage(props: BasePageProps) {
   const { query } = props;
   const { project_id, col_id, col_group_id, section_id, unit_id } = query;
-
-  console.log(query);
 
   const Icon_ = () => h(Icon, { icon: "chevron-right" });
   const breadCrumbs = [

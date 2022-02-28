@@ -1,3 +1,8 @@
+/* 
+The different data types used in the application. Usually matching up with a specific db view in
+macrostrat_api schema
+*/
+
 export interface Project {
   descrip: string;
   id?: number;

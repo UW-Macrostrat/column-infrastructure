@@ -19,7 +19,6 @@ import { Button, NumericInput, TextArea } from "@blueprintjs/core";
 import {
   ModelEditor,
   useModelEditor,
-  ModelEditButton,
   //@ts-ignore
 } from "@macrostrat/ui-components/lib/esm";
 import styles from "../comp.module.scss";
@@ -76,6 +75,7 @@ function EnvTags() {
     ]),
   ]);
 }
+
 function LithTags() {
   const {
     model,
@@ -115,6 +115,7 @@ function LithTags() {
     ]),
   ]);
 }
+
 function UnitThickness() {
   const {
     model,
@@ -144,6 +145,13 @@ function UnitThickness() {
   ]);
 }
 
+/* 
+The strat_name situation is semi-complex. There are many 
+units that have an assigned strat_name that is stored. But there
+are a lot of units that contain a 'strat_name' but that strat_name 
+is NOT stored in the database with a proper record. This is complicated
+right now, but we can discuss how to move forward.
+*/
 function StratName() {
   const router = useRouter();
   const { model, actions } = useModelEditor();
@@ -216,10 +224,7 @@ function UnitPosition(props: UnitPositionI) {
 }
 
 /* 
-Needs a strat_name displayer, we'll be stricter with editing that
-
-Need interval suggest component (2), Need A color picker, Contact suggests.
-Tags for liths and environs; adding components for those too.
+Probably the most complicated component, bc there are so many editable things.
 */
 function UnitEdit() {
   const { model, hasChanges, actions, ...rest } = useModelEditor();
