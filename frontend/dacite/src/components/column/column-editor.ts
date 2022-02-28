@@ -73,20 +73,18 @@ function ColumnRef() {
 function NewRef() {
   const { model, actions, hasChanges }: Model = useModelEditor();
 
-  const persistChanges = (e: RefI, c: Partial<RefI>) => {
+  const persistChanges = async (e: RefI, c: Partial<RefI>) => {
+    console.log("persistChanges!!");
     // would need to post ref to back as new ref first
-    actions.updateState({ model: { ref: { $set: e } } });
-    return e;
+    const { data, error } = await pg.from("refs").insert([e]);
+    if (!error) {
+      actions.updateState({ model: { ref: { $set: data[0] } } });
+    }
+    return data[0];
   };
-
+  //@ts-ignore
   return h(RefEditor, { model: model.ref || {}, persistChanges });
 }
-
-/* 
-Col Group: Suggest -> but only if you wanna switch
-NOTES: text area field
-REF: Suggest -> New Ref possiblity, collapse? 
-*/
 
 function ColumnEdit({ curColGroup }: { curColGroup: Partial<ColumnGroupI> }) {
   const { model, actions, hasChanges }: Model = useModelEditor();
