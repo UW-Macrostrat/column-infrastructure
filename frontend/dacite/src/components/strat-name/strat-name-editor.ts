@@ -110,10 +110,6 @@ function StratNameEdit() {
           onChange: (item: StratNameDataI) => {
             updateStratName("parent", item.data);
           },
-          initialSelected: {
-            value: model.parent?.strat_name,
-            data: model.parent,
-          },
         }),
       ]
     ),
