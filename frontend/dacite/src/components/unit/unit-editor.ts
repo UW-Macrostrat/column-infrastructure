@@ -148,18 +148,29 @@ function StratName() {
   const router = useRouter();
   const { model, actions } = useModelEditor();
   const { unit }: UnitEditorModel = model;
-
   const href = unit.strat_name
     ? createLink(`/strat-name/edit`, {
         ...router.query,
         strat_name_id: unit.strat_name.id,
       })
-    : "new";
+    : unit.unit_strat_name
+    ? createLink(`/strat-name/new`, {
+        ...router.query,
+        name: unit.unit_strat_name,
+      })
+    : createLink(`/strat-name/new`, {
+        ...router.query,
+      });
 
   const initialSelected: StratNameDataI | undefined = unit?.strat_name
     ? {
         value: unit.unit_strat_name || unit.strat_name.strat_name,
         data: unit.strat_name,
+      }
+    : unit?.unit_strat_name
+    ? {
+        value: unit.unit_strat_name,
+        data: { strat_name: unit.unit_strat_name, id: undefined },
       }
     : undefined;
 
@@ -212,7 +223,6 @@ Tags for liths and environs; adding components for those too.
 */
 function UnitEdit() {
   const { model, hasChanges, actions, ...rest } = useModelEditor();
-  console.log(model, actions, rest);
   const { unit }: { unit: UnitsView } = model;
 
   const updateUnit = (field: string, e: any) => {
