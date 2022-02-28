@@ -20,71 +20,34 @@ import {
 import styles from "../comp.module.scss";
 import pg, { usePostgrest } from "../..";
 import { CancelButton, SubmitButton } from "..";
+import { MySuggest } from "../suggest";
 
 const h = hyperStyled(styles);
+
+interface TimeScaleSuggest {
+  value: string;
+  data: TimeScale;
+}
+
 interface TimeScaleSuggestProps {
-  onChange: (e: TimeScale) => void;
+  onChange: (e: TimeScaleSuggest) => void;
   initialSelected?: number;
   onQueryChange?: (e: string) => void;
   timescales: TimeScale[];
 }
 
-const TimeSuggest = Suggest.ofType<TimeScale>();
-
 function TimeScaleSuggest(props: TimeScaleSuggestProps) {
-  const selected_ = props.timescales.filter(
-    (t) => t.id == props.initialSelected
-  );
-  let newSelected: TimeScale | undefined;
-  if (selected_.length > 0) {
-    newSelected = selected_[0];
-  }
+  const timescales_ = props.timescales.map((t) => {
+    return { value: t.timescale, data: t };
+  });
+g
+  const init = timescales_.filter((t) => t.data.id == props.initialSelected)[0];
 
-  const [selected, setSelected] = useState(newSelected);
-  let itemz = [...props.timescales];
-
-  const itemRenderer: ItemRenderer<TimeScale> = (
-    item: TimeScale,
-    { handleClick }
-  ) => {
-    const { id, timescale } = item;
-    const active = selected?.timescale == timescale;
-    return h(MenuItem, {
-      key: id,
-      labelElement: active ? h(Icon, { icon: "tick" }) : null,
-      text: timescale,
-      onClick: handleClick,
-      active: active,
-    });
-  };
-
-  const itemPredicate: ItemPredicate<TimeScale> = (
-    query: string,
-    item: TimeScale
-  ) => {
-    const { id, timescale } = item;
-
-    return timescale.toLowerCase().indexOf(query.toLowerCase()) >= 0;
-  };
-
-  const onItemSelect = (item: TimeScale) => {
-    setSelected(item);
-    props.onChange(item);
-  };
-  //@ts-ignore
-  return h(TimeSuggest, {
-    inputValueRenderer: (item: TimeScale) => item.timescale,
-    items: itemz.slice(0, 200),
-    popoverProps: {
-      minimal: true,
-      popoverClassName: styles.mySuggest,
-    },
-    selectedItem: selected,
-    onItemSelect: onItemSelect,
-    itemRenderer: itemRenderer,
-    itemPredicate: itemPredicate,
+  return h(MySuggest, {
+    items: timescales_,
+    initialSelected: init,
+    onChange: props.onChange,
     onQueryChange: props.onQueryChange,
-    resetOnQuery: true,
   });
 }
 
@@ -102,9 +65,6 @@ function ProjectEdit() {
   } = useModelEditor();
 
   const timescales: TimeScale[] = usePostgrest(pg.from("timescales"));
-
-  // two text editors, name and description
-  // could have a suggest for the timescale
 
   const defaultProjectName =
     model.project.length > 2 ? model.project : undefined;
@@ -158,7 +118,8 @@ function ProjectEdit() {
         h.if(timescales != undefined)(TimeScaleSuggest, {
           initialSelected: model.timescale_id,
           timescales,
-          onChange: (e: TimeScale) => updateProject("timescale_id", e.id),
+          onChange: (e: TimeScaleSuggest) =>
+            updateProject("timescale_id", e.data.id),
         }),
       ]
     ),
