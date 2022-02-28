@@ -13,6 +13,7 @@ export interface QueryI {
   unit_id?: number;
   col_group_id?: number;
   strat_name_id?: number;
+  name?: string;
 }
 
 interface BasePageProps {
