@@ -40,7 +40,7 @@ function TimeScaleSuggest(props: TimeScaleSuggestProps) {
   const timescales_ = props.timescales.map((t) => {
     return { value: t.timescale, data: t };
   });
-g
+
   const init = timescales_.filter((t) => t.data.id == props.initialSelected)[0];
 
   return h(MySuggest, {
