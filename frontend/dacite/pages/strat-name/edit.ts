@@ -20,7 +20,7 @@ export default function EditColumnGroup() {
 
   const strat_names: StratNameI[] = usePostgrest(
     pg
-      .from("strat_names_view")
+      .from("strat_names")
       .select()
       .match({ id: strat_name_id })
   );
