@@ -13,7 +13,7 @@
     "@blueprintjs/popover2": "^0.12.9",
     "@blueprintjs/select": "^3.18.11",
     "@macrostrat/hyper": "^2.0.1",
-    "@macrostrat/ui-components": "^1.0.5",
+    "@macrostrat/ui-components": "^1.1.2",
     "@supabase/postgrest-js": "^0.36.0",
     "next": "12.0.8",
     "next-transpile-modules": "^9.0.0",
