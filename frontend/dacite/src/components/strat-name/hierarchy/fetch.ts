@@ -3,6 +3,7 @@ import { IHierarchy } from "@macrostrat/ui-components/lib/types";
 
 const url = "https://macrostrat.org/api/v2/defs/strat_names";
 
+// most of this is copied from the sift codebase
 var rankMap = {
   SGp: null,
   Gp: "sgp",
