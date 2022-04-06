@@ -1,5 +1,5 @@
-import { useReducer, createContext, useContext } from "react";
-import { createUser, login, setCookie } from "./utils";
+import { useReducer, createContext, useContext, useEffect } from "react";
+import { createUser, getStatus, login, setCookie } from "./utils";
 import h from "@macrostrat/hyper";
 
 /////////////////// base data types ////////////////////////
@@ -19,8 +19,9 @@ export type UserInfo = Credentials & {
 type Login = { type: "login"; payload: Credentials };
 type Logout = { type: "logout" };
 type Register = { type: "register"; payload: UserInfo };
+type GetStatus = { type: "get-status" };
 
-type AuthAsyncActions = Login | Logout | Register;
+type AuthAsyncActions = Login | Logout | Register | GetStatus;
 
 ////////////////////////// sync actions/////////////////////////
 type AuthSuccess = { type: "auth-form-success"; payload: LoginStatus };
@@ -52,7 +53,7 @@ function useAuthActions(
         //set token as cookie
         //@ts-ignore
         const token = data?.token;
-        setCookie({ cookieName: "jwt_token", cookieValue: `bearer ${token}` });
+        setCookie({ cookieName: "jwt_token", cookieValue: token });
         return dispatch({
           type: "auth-form-success",
           payload: {
@@ -70,6 +71,24 @@ function useAuthActions(
           });
         }
         return dispatch({ type: "register-success" });
+      case "get-status":
+        const { data: _data, error: _error } = await getStatus();
+        console.log("get-status", _data, _error);
+        if (_error || !_data) {
+          return dispatch({
+            type: "auth-form-failure",
+            payload: { username: null, error: null, login: false },
+          });
+        }
+        return dispatch({
+          type: "auth-form-success",
+          payload: {
+            //@ts-ignore
+            username: _data,
+            error: null,
+            login: true,
+          },
+        });
       default:
         return dispatch(action);
     }
@@ -134,6 +153,10 @@ function authReducer(
 function AuthProvider(props: any) {
   const [state, dispatch] = useReducer(authReducer, authDefaultState);
   const runAction = useAuthActions(dispatch);
+
+  useEffect(() => {
+    runAction({ type: "get-status" });
+  }, []);
 
   return h(
     AuthContext.Provider,

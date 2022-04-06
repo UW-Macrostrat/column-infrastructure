@@ -1,4 +1,4 @@
-import pg from "../src";
+import pg from "..";
 
 interface GetCookieI {
   cookieName: string;
@@ -32,6 +32,10 @@ function getCookie(props: GetCookieI) {
   return "";
 }
 
+function removeCookie(props: GetCookieI) {
+  document.cookie = props.cookieName + "=; Max-Age=-99999999;";
+}
+
 interface LoginI {
   username: string;
   password: string;
@@ -55,4 +59,13 @@ async function createUser(props: LoginI) {
   return { data, error };
 }
 
-export { setCookie, getCookie, login, createUser };
+async function getStatus() {
+  const token = getCookie({ cookieName: "jwt_token" });
+  console.log(token);
+  const { data, error } = await pg
+    .auth(getCookie({ cookieName: "jwt_token" }))
+    .rpc("get_username");
+  return { data, error };
+}
+
+export { setCookie, getCookie, login, createUser, getStatus };

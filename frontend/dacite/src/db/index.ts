@@ -5,7 +5,7 @@ import {
   PostgrestQueryBuilder,
 } from "@supabase/postgrest-js";
 
-const pg = new PostgrestClient("http://localhost:3001"); // this needs to be env set
+let pg = new PostgrestClient("http://localhost:3001");
 
 /**
  * Fetch data using postgrestclient

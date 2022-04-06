@@ -1,0 +1,52 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "project": "Fake project number 1",
+      "descrip": "This is a fake project for ui purposes",
+      "users": [
+        { "id": 1, "username": "fakeuser1", "role": "reader" },
+        { "id": 1, "username": "fakeuser1", "role": "reader" },
+        { "id": 1, "username": "fakeuser1", "role": "reader" }
+      ]
+    },
+    {
+      "id": 1,
+      "project": "Fake project number 1",
+      "descrip": "This is a fake project for ui purposes",
+      "users": [
+        { "id": 1, "username": "fakeuser1", "role": "reader" },
+        { "id": 1, "username": "fakeuser1", "role": "reader" },
+        { "id": 1, "username": "fakeuser1", "role": "reader" }
+      ]
+    },
+    {
+      "id": 1,
+      "project": "Fake project number 1",
+      "descrip": "This is a fake project for ui purposes",
+      "users": [
+        { "id": 1, "username": "fakeuser1", "role": "reader" },
+        { "id": 1, "username": "fakeuser1", "role": "reader" },
+        { "id": 1, "username": "fakeuser1", "role": "reader" }
+      ]
+    }
+  ],
+  "roles": [
+    { "id": 1, "role": "reader", "description": "user can read (SELECT) data" },
+    {
+      "id": 1,
+      "role": "writer",
+      "description": "user can read, update, and add (SELECT, UPDATE, INSERT) data"
+    },
+    {
+      "id": 1,
+      "role": "deleter",
+      "description": "user can read, update, add and delete (SELECT, UPDATE, INSERT, DELETE) data"
+    },
+    {
+      "id": 1,
+      "role": "manager",
+      "description": "user can do everything and manage other user access to project"
+    }
+  ]
+}

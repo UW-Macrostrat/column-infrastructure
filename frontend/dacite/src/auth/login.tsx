@@ -138,11 +138,10 @@ function Register({ onSubmit, error }: AuthFormI) {
 }
 
 function RegisterModal({ initialOpen = true }: { initialOpen: boolean }) {
+  const { login, username, error, registerError, runAction } = useAuth();
   const [open, setOpen] = useState(initialOpen);
   const [loggingOn, setLogin] = useState(true);
   const title = loggingOn ? "Login" : "Register";
-
-  const { login, username, error, registerError, runAction } = useAuth();
 
   const loginSubmit = (values: Credentials) => {
     runAction({ type: "login", payload: values });
@@ -155,7 +154,7 @@ function RegisterModal({ initialOpen = true }: { initialOpen: boolean }) {
   console.log(login, username, error);
   return (
     <div>
-      <Modal opened={open} onClose={() => setOpen(false)} title={title}>
+      <Modal opened={!login} onClose={() => setOpen(false)} title={title}>
         {loggingOn ? (
           <LoginForm onSubmit={loginSubmit} error={error} />
         ) : (
