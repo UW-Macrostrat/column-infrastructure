@@ -7,14 +7,13 @@ import pg, {
   Table,
   EditButton,
   CreateButton,
-  getCookie,
 } from "../../src";
 
-function Projects() {
-  if (typeof window === undefined) {
-    return h("div");
-  }
-  const projects: Project[] = usePostgrest(pg.from("projects"));
+function Projects(props: any) {
+  console.log(props, "project");
+  const projects: Project[] = usePostgrest(
+    pg.auth(props.token).from("projects")
+  );
   if (!projects) return h("div");
 
   const headers = Object.keys(projects[0]);
