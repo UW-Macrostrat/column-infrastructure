@@ -7,11 +7,12 @@ interface LoginI {
 }
 
 async function login(props: LoginI) {
-  const { data, error } = await pg.rpc("login", {
+  console.log(props);
+  const { data, error } = await pg.auth("").rpc("login", {
     username: props.username,
     pass: props.password,
   });
-
+  console.log(data, error);
   return { data, error };
 }
 

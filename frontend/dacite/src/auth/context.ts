@@ -1,6 +1,6 @@
 import { useReducer, createContext, useContext, useEffect } from "react";
 import { createUser, getStatus, login } from "./utils";
-import { setCookies } from "cookies-next";
+import { getCookie, removeCookies, setCookies } from "cookies-next";
 import h from "@macrostrat/hyper";
 
 /////////////////// base data types ////////////////////////
@@ -31,11 +31,14 @@ type AuthFailure = { type: "auth-form-failure"; payload: LoginStatus };
 type RegisterSuccess = { type: "register-success" };
 type RegisterFailure = { type: "register-failure"; payload: { error: string } };
 
+type RequestLoginForm = { type: "request-login-form" };
+
 type AuthSyncActions =
   | AuthSuccess
   | AuthFailure
   | RegisterSuccess
-  | RegisterFailure;
+  | RegisterFailure
+  | RequestLoginForm;
 
 function useAuthActions(
   dispatch: React.Dispatch<AuthAsyncActions | AuthSyncActions>
@@ -55,14 +58,9 @@ function useAuthActions(
         //@ts-ignore
         const token = data?.token;
         setCookies("jwt_token", token, { maxAge: 60 * 6 * 24 });
-        return dispatch({
-          type: "auth-form-success",
-          payload: {
-            username: action.payload.username,
-            error: null,
-            login: true,
-          },
-        });
+        // refresh page and go to home on login
+        window.location.replace(window.location.pathname);
+        return;
       case "register":
         const { data: data_, error: error_ } = await createUser(action.payload);
         if (error_) {
@@ -101,6 +99,7 @@ interface AuthStateI {
   username: string | null;
   error: string | null;
   registerError: string | null;
+  loginFormOpen: boolean;
 }
 
 interface AuthCtxI extends AuthStateI {
@@ -112,6 +111,7 @@ const authDefaultState: AuthStateI = {
   username: null,
   error: null,
   registerError: null,
+  loginFormOpen: false,
 };
 
 const AuthContext = createContext<AuthCtxI>({
@@ -130,6 +130,7 @@ function authReducer(
         username: action.payload.username,
         error: action.payload.error,
         login: action.payload.login,
+        loginFormOpen: false,
       };
     case "auth-form-failure":
       return {
@@ -145,6 +146,11 @@ function authReducer(
       };
     case "register-failure":
       return { ...state, registerError: action.payload.error };
+    case "request-login-form":
+      return { ...state, loginFormOpen: true };
+    case "logout":
+      removeCookies("jwt_token");
+      return authDefaultState;
     default:
       console.warn("Unknown Action", action);
       return state;

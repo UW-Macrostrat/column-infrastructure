@@ -9,7 +9,21 @@ import {
 } from "../../src";
 
 function Projects(props: any) {
+  console.log("token", props.token);
   const projects: Project[] = props.projects;
+
+  if (projects.length == 0) {
+    return h(BasePage, { query: {}, token: props.token }, [
+      h("h3,", [
+        "Create a Project to get started!",
+        h(CreateButton, {
+          minimal: true,
+          href: "/project/new?project_id=null",
+          text: "Create New Project",
+        }),
+      ]),
+    ]);
+  }
 
   const headers = Object.keys(projects[0]);
 

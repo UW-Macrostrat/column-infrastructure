@@ -28,12 +28,13 @@ export default function EditProject(props: PagePropsBaseI) {
   if (!project) return h(Spinner);
 
   const persistChanges = async (e: Project, c: Partial<Project>) => {
+    console.log("token", props.token);
     const { data, error } = await pg
       .auth(props.token)
       .from("projects")
       .update(c)
       .match({ id: e.id });
-    console.log("Error", error);
+    console.log("Error", error, data);
     if (!error) {
       router.push("/");
       return data[0];

@@ -1,8 +1,10 @@
 import h from "@macrostrat/hyper";
 import Link from "next/link";
-import { Icon } from "@blueprintjs/core";
+import { Icon, MenuDivider, MenuItem } from "@blueprintjs/core";
 import { ProjectManagement, UserSelect } from "./user-management";
-import { TextInput, Text, Box, Group, Button, Popover } from "@mantine/core";
+import { Popover2 } from "@blueprintjs/popover2";
+import { Button as Btn, Menu } from "@blueprintjs/core";
+import { TextInput, Text, Box, Group, Button } from "@mantine/core";
 import { useForm } from "@mantine/hooks";
 import { useAuth } from "./context";
 import { useState } from "react";
@@ -120,30 +122,37 @@ function AccountPage() {
   );
 }
 
+function AccountMenu() {
+  const { username, runAction } = useAuth();
+  return h(Menu, [
+    h(Link, { href: "/account" }, [
+      h(MenuItem, { icon: "cog", text: "Account" }),
+    ]),
+    h(MenuDivider),
+    h(MenuItem, {
+      icon: "log-out",
+      text: `${username} Logout`,
+      onClick: () => runAction({ type: "logout" }),
+    }),
+  ]);
+}
+
+/* if login is false, then it should open the login form */
 function AccountButton() {
   const { login, username, runAction } = useAuth();
-  const [open, setOpen] = useState(false);
 
+  const onClick = () => {
+    runAction({ type: "request-login-form" });
+  };
   return h(
-    Popover,
-    {
-      position: "bottom",
-      opened: open,
-      target: h(
-        Button,
-        { variant: "subtle", onClick: () => setOpen((o) => !o) },
-        [h(Icon, { icon: "person" })]
-      ),
-    },
+    Popover2,
+    { content: h(AccountMenu), minimal: true, disabled: !login },
     [
-      login
-        ? h(Group, { direction: "column" }, [
-            h(Link, { href: "/account" }, [
-              h(Button, { variant: "subtle" }, ["Account"]),
-            ]),
-            h(Button, { variant: "subtle" }, [username, " Logout"]),
-          ])
-        : h(Button, { variant: "subtle" }, ["Login"]),
+      h(Btn, {
+        minimal: true,
+        icon: "person",
+        onClick: login ? undefined : onClick,
+      }),
     ]
   );
 }

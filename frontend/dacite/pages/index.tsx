@@ -14,7 +14,7 @@ export async function getServerSideProps(ctx) {
   const { data, error } = await pg.auth(token).from("projects");
 
   return {
-    props: { projects: data, token }, // will be passed to the page component as props
+    props: { projects: data || [], token: token || null }, // will be passed to the page component as props
   };
 }
 

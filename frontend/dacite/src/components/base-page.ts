@@ -3,7 +3,8 @@ import { Icon } from "@blueprintjs/core";
 import Link from "next/link";
 import styles from "./comp.module.scss";
 import { ReactChild } from "react";
-import { RegisterModal, AccountButton } from "../auth";
+import { RegisterModal, AccountButton, useAuth } from "../auth";
+import { NotLoggedIn } from "../auth/not-logged-in";
 const h = hyperStyled(styles);
 
 export interface QueryI {
@@ -28,6 +29,7 @@ Creates the breadcrumbs at the top of each page based on the router query
 export function BasePage(props: BasePageProps) {
   const { query } = props;
   const { project_id, col_id, col_group_id, section_id, unit_id } = query;
+  const { login } = useAuth();
 
   const Icon_ = () => h(Icon, { icon: "chevron-right" });
   const breadCrumbs = [
@@ -67,6 +69,6 @@ export function BasePage(props: BasePageProps) {
     h("div", { style: { position: "absolute", right: 0, top: 0 } }, [
       h(AccountButton),
     ]),
-    props.children,
+    login ? props.children : h(NotLoggedIn),
   ]);
 }

@@ -12,8 +12,6 @@ import {
 import { useForm } from "@mantine/hooks";
 import { Icon } from "@blueprintjs/core";
 import { useAuth, Credentials, UserInfo } from "./context";
-import styles from "./auth.module.scss";
-import { getCookie } from "./utils";
 
 interface AuthFormI {
   onSubmit: (e: any) => void;
@@ -137,9 +135,8 @@ function Register({ onSubmit, error }: AuthFormI) {
   );
 }
 
-function RegisterModal({ initialOpen = true }: { initialOpen: boolean }) {
-  const { login, username, error, registerError, runAction } = useAuth();
-  const [open, setOpen] = useState(initialOpen);
+function RegisterModal() {
+  const { login, loginFormOpen, error, registerError, runAction } = useAuth();
   const [loggingOn, setLogin] = useState(true);
   const title = loggingOn ? "Login" : "Register";
 
@@ -151,10 +148,9 @@ function RegisterModal({ initialOpen = true }: { initialOpen: boolean }) {
     runAction({ type: "register", payload: values });
   };
 
-  console.log(login, username, error);
   return (
     <div>
-      <Modal opened={!login} onClose={() => setOpen(false)} title={title}>
+      <Modal opened={loginFormOpen} onClose={() => {}} title={title}>
         {loggingOn ? (
           <LoginForm onSubmit={loginSubmit} error={error} />
         ) : (
