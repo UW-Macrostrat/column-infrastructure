@@ -1,6 +1,5 @@
 import h from "@macrostrat/hyper";
-import pg, {
-  usePostgrest,
+import {
   Row,
   Project,
   BasePage,
@@ -10,15 +9,11 @@ import pg, {
 } from "../../src";
 
 function Projects(props: any) {
-  console.log(props, "project");
-  const projects: Project[] = usePostgrest(
-    pg.auth(props.token).from("projects")
-  );
-  if (!projects) return h("div");
+  const projects: Project[] = props.projects;
 
   const headers = Object.keys(projects[0]);
 
-  return h(BasePage, { query: {} }, [
+  return h(BasePage, { query: {}, token: props.token }, [
     h("h3,", [
       "Choose a Project",
       h(CreateButton, {

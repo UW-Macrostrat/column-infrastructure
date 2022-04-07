@@ -1,5 +1,6 @@
 import { useReducer, createContext, useContext, useEffect } from "react";
-import { createUser, getStatus, login, setCookie } from "./utils";
+import { createUser, getStatus, login } from "./utils";
+import { setCookies } from "cookies-next";
 import h from "@macrostrat/hyper";
 
 /////////////////// base data types ////////////////////////
@@ -53,7 +54,7 @@ function useAuthActions(
         //set token as cookie
         //@ts-ignore
         const token = data?.token;
-        setCookie({ cookieName: "jwt_token", cookieValue: token });
+        setCookies("jwt_token", token, { maxAge: 60 * 6 * 24 });
         return dispatch({
           type: "auth-form-success",
           payload: {

@@ -1,17 +1,20 @@
 import h from "@macrostrat/hyper";
 import { Projects } from "./project";
 import { getCookie } from "cookies-next";
+import pg, { usePostgrest, Project } from "../src";
 
 function Home(props: any) {
-  console.log(props);
   return h(Projects, { ...props });
 }
 
-export async function getServerSideProps({ req, res }) {
+export async function getServerSideProps(ctx) {
+  const { req, res } = ctx;
+
   const token = getCookie("jwt_token", { req, res });
+  const { data, error } = await pg.auth(token).from("projects");
 
   return {
-    props: { message: `Next.js is awesome`, token }, // will be passed to the page component as props
+    props: { projects: data, token }, // will be passed to the page component as props
   };
 }
 

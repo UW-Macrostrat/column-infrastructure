@@ -1,5 +1,6 @@
 import h from "@macrostrat/hyper";
 import { useRouter } from "next/router";
+import { getCookie } from "cookies-next";
 import pg, {
   usePostgrest,
   Project,
@@ -9,14 +10,15 @@ import pg, {
   Table,
   CreateButton,
   EditButton,
+  PagePropsBaseI,
 } from "../../src";
 
-export default function ColumnGroup() {
-  const router = useRouter();
-  const { project_id } = router.query;
+export default function ColumnGroup(props: PagePropsBaseI) {
+  const { project_id } = props.query;
   if (!project_id) return h("div");
   const projects: Project[] = usePostgrest(
     pg
+      .auth(props.token)
       .from("projects")
       .select()
       .match({ id: project_id })
@@ -24,6 +26,7 @@ export default function ColumnGroup() {
   );
   const columnGroups: ColumnGroupI[] = usePostgrest(
     pg
+      .auth(props.token)
       .from("col_group_view")
       .select()
       .match({ project_id: project_id })
@@ -32,7 +35,7 @@ export default function ColumnGroup() {
   if (!columnGroups || !projects) return h("div");
   const project = projects[0];
 
-  return h(BasePage, { query: router.query }, [
+  return h(BasePage, { query: props.query, token: props.token }, [
     h("h3", [
       project.project,
       h(CreateButton, {
@@ -89,4 +92,14 @@ export default function ColumnGroup() {
       }),
     ]),
   ]);
+}
+
+export async function getServerSideProps(ctx) {
+  const { req, res, query } = ctx;
+
+  const token = getCookie("jwt_token", { req, res });
+
+  return {
+    props: { token, query }, // will be passed to the page component as props
+  };
 }

@@ -1,15 +1,24 @@
 import { hyperStyled } from "@macrostrat/hyper";
-import pg, { usePostgrest, BasePage, Project, ProjectEditor } from "../../src";
+import pg, {
+  usePostgrest,
+  BasePage,
+  Project,
+  ProjectEditor,
+  QueryI,
+  PagePropsBaseI,
+} from "../../src";
 import { useRouter } from "next/router";
 import styles from "./project.module.scss";
 import { Spinner } from "@blueprintjs/core";
+import { getCookie } from "cookies-next";
 const h = hyperStyled(styles);
 
-export default function NewProject() {
+export default function EditProject(props: PagePropsBaseI) {
   const router = useRouter();
   const { project_id } = router.query;
   const project: Project = usePostgrest(
     pg
+      .auth(props.token)
       .from("projects")
       .select()
       .match({ id: project_id })
@@ -20,6 +29,7 @@ export default function NewProject() {
 
   const persistChanges = async (e: Project, c: Partial<Project>) => {
     const { data, error } = await pg
+      .auth(props.token)
       .from("projects")
       .update(c)
       .match({ id: e.id });
@@ -32,9 +42,19 @@ export default function NewProject() {
     }
   };
 
-  return h(BasePage, { query: router.query }, [
+  return h(BasePage, { query: props.query, token: props.token }, [
     h("h3", ["Create a New Project"]),
     //@ts-ignore
     h(ProjectEditor, { project: project[0], persistChanges }),
   ]);
+}
+
+export async function getServerSideProps(ctx) {
+  const { req, res, query } = ctx;
+
+  const token = getCookie("jwt_token", { req, res });
+
+  return {
+    props: { token, query }, // will be passed to the page component as props
+  };
 }

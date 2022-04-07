@@ -1,10 +1,18 @@
 import { hyperStyled } from "@macrostrat/hyper";
-import pg, { usePostgrest, BasePage, Project, ProjectEditor } from "../../src";
+import pg, {
+  usePostgrest,
+  PagePropsBaseI,
+  BasePage,
+  Project,
+  ProjectEditor,
+  QueryI,
+} from "../../src";
+import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import styles from "./project.module.scss";
 const h = hyperStyled(styles);
 
-export default function NewProject() {
+export default function NewProject(props: PagePropsBaseI) {
   const router = useRouter();
 
   const newProject: Project = {
@@ -14,14 +22,27 @@ export default function NewProject() {
   };
 
   const persistChanges = async (e: Project, c: Partial<Project>) => {
-    const { data, error } = await pg.from("projects").insert([e]);
+    const { data, error } = await pg
+      .auth(props.token)
+      .from("projects")
+      .insert([e]);
     router.push("/");
     return data[0];
   };
 
-  return h(BasePage, { query: router.query }, [
+  return h(BasePage, { query: props.query, token: props.token }, [
     h("h3", ["Create a New Project"]),
     //@ts-ignore
     h(ProjectEditor, { project: newProject, persistChanges }),
   ]);
+}
+
+export async function getServerSideProps(ctx) {
+  const { req, res, query } = ctx;
+
+  const token = getCookie("jwt_token", { req, res });
+
+  return {
+    props: { token, query }, // will be passed to the page component as props
+  };
 }

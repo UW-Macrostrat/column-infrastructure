@@ -1,4 +1,5 @@
 import { hyperStyled } from "@macrostrat/hyper";
+import { getCookie } from "cookies-next";
 import pg, {
   usePostgrest,
   UnitsView,
@@ -7,6 +8,7 @@ import pg, {
   UnitEditorModel,
   BasePage,
   UnitEditor,
+  PagePropsBaseI,
 } from "../../src";
 import {
   conductChangeSet,
@@ -19,23 +21,13 @@ const h = hyperStyled(styles);
 
 function getUnitData(unit_id: number) {
   const units: UnitsView[] = usePostgrest(
-    pg
-      .from("units_view")
-      .select()
-      .match({ id: unit_id })
-      .limit(1)
+    pg.from("units_view").select().match({ id: unit_id }).limit(1)
   );
   const envs: EnvironUnit[] = usePostgrest(
-    pg
-      .from("environ_unit")
-      .select()
-      .match({ unit_id: unit_id })
+    pg.from("environ_unit").select().match({ unit_id: unit_id })
   );
   const liths: LithUnit[] = usePostgrest(
-    pg
-      .from("lith_unit")
-      .select()
-      .match({ unit_id: unit_id })
+    pg.from("lith_unit").select().match({ unit_id: unit_id })
   );
   return { units, envs, liths };
 }
@@ -46,9 +38,8 @@ Needs a strat_name displayer, we'll be stricter with editing that
 Need interval suggest component (2), Need A color picker, Contact suggests.
 Tags for liths and environs; adding components for those too.
 */
-function UnitEdit() {
-  const router = useRouter();
-  const { project_id, col_id, section_id, unit_id } = router.query;
+function UnitEdit(props: PagePropsBaseI) {
+  const { project_id, col_id, section_id, unit_id } = props.query;
   if (!unit_id) return h(Spinner);
   const { units, envs, liths } = getUnitData(unit_id);
   if (!units || !envs || !liths) return h(Spinner);
@@ -62,6 +53,7 @@ function UnitEdit() {
     if (changeSet.unit) {
       const changes = conductChangeSet(unit, changeSet.unit);
       const { data, error } = await pg
+        .auth(props.token)
         .from("units")
         .update(changes)
         .match({ id: unit.id });
@@ -80,6 +72,7 @@ function UnitEdit() {
       }
       if (deletions.length > 0) {
         const { data, error } = await pg
+          .auth(props.token)
           .from("unit_environs")
           .delete()
           .in("environ_id", deletions)
@@ -95,10 +88,14 @@ function UnitEdit() {
         const inserts = additions.map((i) => {
           return { unit_id: unit.id, lith_id: i };
         });
-        const { data, error } = await pg.from("unit_liths").insert(inserts);
+        const { data, error } = await pg
+          .auth(props.token)
+          .from("unit_liths")
+          .insert(inserts);
       }
       if (deletions.length > 0) {
         const { data, error } = await pg
+          .auth(props.token)
           .from("unit_liths")
           .delete()
           .in("lith_id", deletions)
@@ -108,7 +105,7 @@ function UnitEdit() {
     return updatedModel;
   };
 
-  return h(BasePage, { query: router.query }, [
+  return h(BasePage, { query: props.query, token: props.token }, [
     h("h3", [
       "Edit Unit: ",
       unit.unit_strat_name ||
@@ -117,6 +114,16 @@ function UnitEdit() {
     //@ts-ignore
     h(UnitEditor, { model, persistChanges }),
   ]);
+}
+
+export async function getServerSideProps(ctx) {
+  const { req, res, query } = ctx;
+
+  const token = getCookie("jwt_token", { req, res });
+
+  return {
+    props: { token, query }, // will be passed to the page component as props
+  };
 }
 
 export default UnitEdit;

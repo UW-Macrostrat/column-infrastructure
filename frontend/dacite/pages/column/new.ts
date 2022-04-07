@@ -5,17 +5,20 @@ import pg, {
   ColumnGroupI,
   ColumnEditor,
   ColumnForm,
+  PagePropsBaseI,
 } from "../../src";
+import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import styles from "./column.module.scss";
 import { Spinner } from "@blueprintjs/core";
 import { createLink } from "../../src/components/helpers";
 const h = hyperStyled(styles);
 
-const getData = (project_id: string) => {
+const getData = (project_id: number, token: string) => {
   // get all col_groups for project, find one matches col_group_id
   const colGroups: Partial<ColumnGroupI>[] = usePostgrest(
     pg
+      .auth(token)
       .from("col_group_view")
       .select("id, col_group, col_group_long")
       .match({ project_id: project_id })
@@ -23,10 +26,10 @@ const getData = (project_id: string) => {
   return colGroups;
 };
 
-export default function NewColumn() {
+export default function NewColumn(props: PagePropsBaseI) {
   const router = useRouter();
-  const { project_id, col_group_id } = router.query;
-  const colGroups = getData(project_id);
+  const { project_id, col_group_id } = props.query;
+  const colGroups = getData(project_id, props.token);
 
   if (!colGroups) return h(Spinner);
   const curColGroup = colGroups.filter((cg) => cg.id == col_group_id);
@@ -44,11 +47,15 @@ export default function NewColumn() {
       status_code: "in process",
       col_type: "column",
     };
-    const { data, error } = await pg.from("cols").insert([newColumn]);
+    const { data, error } = await pg
+      .auth(props.token)
+      .from("cols")
+      .insert([newColumn]);
     if (!error) {
       const col_id: number = data[0].id;
       const ref_col = { ref_id: e.ref.id, col_id: col_id };
       const { data: data_, error } = await pg
+        .auth(props.token)
         .from("col_refs")
         .insert([ref_col]);
       if (!error) {
@@ -63,7 +70,7 @@ export default function NewColumn() {
     }
   };
 
-  return h(BasePage, { query: router.query }, [
+  return h(BasePage, { query: props.query, token: props.token }, [
     h("h3", [
       `Add a new column to ${curColGroup[0].col_group_long}(${curColGroup[0].col_group})`,
     ]),
@@ -75,4 +82,14 @@ export default function NewColumn() {
       curColGroup: curColGroup[0],
     }),
   ]);
+}
+
+export async function getServerSideProps(ctx) {
+  const { req, res, query } = ctx;
+
+  const token = getCookie("jwt_token", { req, res });
+
+  return {
+    props: { token, query }, // will be passed to the page component as props
+  };
 }

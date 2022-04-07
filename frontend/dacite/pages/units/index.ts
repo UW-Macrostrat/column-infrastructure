@@ -1,15 +1,22 @@
 import h from "@macrostrat/hyper";
-import pg, { usePostgrest, Row, UnitsView, CreateButton } from "../../src";
+import { getCookie } from "cookies-next";
+import pg, {
+  usePostgrest,
+  Row,
+  UnitsView,
+  CreateButton,
+  PagePropsBaseI,
+} from "../../src";
 import { BasePage, Table } from "../../src";
 import { useRouter } from "next/router";
 import { Spinner, Button } from "@blueprintjs/core";
 import { createLink } from "../../src/components/helpers";
 
-function Units() {
-  const router = useRouter();
-  const { project_id, col_id, col_group_id, section_id } = router.query;
+function Units(props: PagePropsBaseI) {
+  const { project_id, col_id, col_group_id, section_id } = props.query;
   const units: UnitsView[] = usePostgrest(
     pg
+      .auth(props.token)
       .from("units_view")
       .select()
       .order("age_top", { ascending: true })
@@ -26,12 +33,12 @@ function Units() {
   ];
 
   if (!units) return h(Spinner);
-  return h(BasePage, { query: router.query }, [
+  return h(BasePage, { query: props.query, token: props.token }, [
     h("h3", [
       "Units",
       h(CreateButton, {
         href: createLink("/units/new", {
-          ...router.query,
+          ...props.query,
           unit_id: undefined,
         }),
         text: "Add new unit",
@@ -52,7 +59,7 @@ function Units() {
             {
               key: i,
               href: createLink("/units/edit", {
-                ...router.query,
+                ...props.query,
                 unit_id: unit.id,
               }),
             },
@@ -73,6 +80,16 @@ function Units() {
       ]),
     ]),
   ]);
+}
+
+export async function getServerSideProps(ctx) {
+  const { req, res, query } = ctx;
+
+  const token = getCookie("jwt_token", { req, res });
+
+  return {
+    props: { token, query }, // will be passed to the page component as props
+  };
 }
 
 export default Units;

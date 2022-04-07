@@ -5,21 +5,20 @@ import pg, {
   Project,
   ColumnGroupEditor,
   ColumnGroupI,
+  PagePropsBaseI,
 } from "../../src";
 import { useRouter } from "next/router";
 import styles from "./colgroup.module.scss";
 import { Spinner } from "@blueprintjs/core";
+import { getCookie } from "cookies-next";
 const h = hyperStyled(styles);
 
-export default function NewProject() {
+export default function NewProject(props: PagePropsBaseI) {
   const router = useRouter();
-  const { project_id } = router.query;
+  const { project_id } = props.query;
 
   const projects: Project[] = usePostgrest(
-    pg
-      .from("projects")
-      .select()
-      .match({ id: project_id })
+    pg.auth(props.token).from("projects").select().match({ id: project_id })
   );
 
   if (!projects) return h(Spinner);
@@ -34,6 +33,7 @@ export default function NewProject() {
     c: Partial<ColumnGroupI>
   ) => {
     const { data, error } = await pg
+      .auth(props.token)
       .from("col_groups")
       .insert([{ ...e, project_id: project_id }]);
     if (!error) {
@@ -46,9 +46,18 @@ export default function NewProject() {
 
   const project = projects[0];
 
-  return h(BasePage, { query: router.query }, [
+  return h(BasePage, { query: props.query, token: props.token }, [
     h("h3", ["Create a New Column Group for ", project.project]),
     //@ts-ignore
     h(ColumnGroupEditor, { model: newColumnGroup, persistChanges }),
   ]);
+}
+export async function getServerSideProps(ctx) {
+  const { req, res, query } = ctx;
+
+  const token = getCookie("jwt_token", { req, res });
+
+  return {
+    props: { token, query }, // will be passed to the page component as props
+  };
 }

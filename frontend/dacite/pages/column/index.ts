@@ -8,7 +8,9 @@ import pg, {
   Table,
   EditButton,
   CreateButton,
+  PagePropsBaseI,
 } from "../../src";
+import { getCookie } from "cookies-next";
 import { createLink } from "../../src/components/helpers";
 
 /* 
@@ -16,12 +18,9 @@ Creates section arrays by finding the lowest posistion_bottom and highest
 position_bottom. Sets a bottom and top strat_name based on this 
 sorting. 
 */
-function dataPreProcess(col_id: any) {
+function dataPreProcess(col_id: any, token: string) {
   const colSections: IColumnSection[] = usePostgrest(
-    pg
-      .from("col_sections")
-      .select()
-      .match({ col_id })
+    pg.auth(token).from("col_sections").select().match({ col_id })
     // .not("section_id", "is", null)
   );
   if (!colSections) return [];
@@ -65,12 +64,12 @@ function dataPreProcess(col_id: any) {
   return { data, col_name };
 }
 
-export default function ColumnGroup() {
+export default function ColumnGroup(props: PagePropsBaseI) {
   const router = useRouter();
-  const { col_id, project_id, col_group_id } = router.query;
+  const { col_id, project_id, col_group_id } = props.query;
   if (!col_id) return h("div");
 
-  const { data, col_name } = dataPreProcess(col_id);
+  const { data, col_name } = dataPreProcess(col_id, props.token);
   console.log("data", data);
 
   if (!data) return h("div");
@@ -78,7 +77,7 @@ export default function ColumnGroup() {
 
   let dat = data.filter((d) => d.section_id != null);
 
-  return h(BasePage, { query: router.query }, [
+  return h(BasePage, { query: props.query, token: props.token }, [
     h("h3", [
       `Sections for ${col_name}`,
       h(EditButton, {
@@ -94,7 +93,7 @@ export default function ColumnGroup() {
       h(CreateButton, {
         minimal: false,
         href: createLink("/units/new", {
-          ...router.query,
+          ...props.query,
           section_id: undefined,
         }),
         text: "Create Unit",
@@ -116,7 +115,7 @@ export default function ColumnGroup() {
               {
                 key: i,
                 href: createLink("/units", {
-                  ...router.query,
+                  ...props.query,
                   section_id: col.section_id,
                 }),
               },
@@ -133,11 +132,21 @@ export default function ColumnGroup() {
       h(CreateButton, {
         minimal: false,
         href: createLink("/units/new", {
-          ...router.query,
+          ...props.query,
           section_id: undefined,
         }),
         text: "Create Unit in new Section",
       }),
     ]),
   ]);
+}
+
+export async function getServerSideProps(ctx) {
+  const { req, res, query } = ctx;
+
+  const token = getCookie("jwt_token", { req, res });
+
+  return {
+    props: { token, query }, // will be passed to the page component as props
+  };
 }

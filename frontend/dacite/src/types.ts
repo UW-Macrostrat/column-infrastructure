@@ -3,6 +3,8 @@ The different data types used in the application. Usually matching up with a spe
 macrostrat_api schema
 */
 
+import { QueryI } from "./components";
+
 export interface Project {
   descrip: string;
   id?: number;
@@ -129,4 +131,9 @@ export interface StratNameI {
   rank: RANK;
   ref_id: number;
   concept_id?: number;
+}
+
+export interface PagePropsBaseI {
+  query: QueryI;
+  token: string;
 }

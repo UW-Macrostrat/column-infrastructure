@@ -3,7 +3,7 @@ import { Icon } from "@blueprintjs/core";
 import Link from "next/link";
 import styles from "./comp.module.scss";
 import { ReactChild } from "react";
-import { AuthProvider, RegisterModal, AccountButton } from "../auth";
+import { RegisterModal, AccountButton } from "../auth";
 const h = hyperStyled(styles);
 
 export interface QueryI {
@@ -18,6 +18,7 @@ export interface QueryI {
 
 interface BasePageProps {
   query: QueryI;
+  token: string;
   children: ReactChild;
 }
 
@@ -49,27 +50,23 @@ export function BasePage(props: BasePageProps) {
   ].filter((crumb) => crumb.predicate);
 
   return h("div.page", [
-    h(AuthProvider, [
-      h("div.bread-crumbs", [
-        breadCrumbs.map((crumb, i) => {
-          const last = i == breadCrumbs.length - 1;
-          if (last) {
-            return h(Link, { href: crumb.href, key: i }, [
-              h("a", [crumb.name]),
-            ]);
-          } else {
-            return h("div", { key: i }, [
-              h(Link, { href: crumb.href }, [h("a", [crumb.name])]),
-              h(Icon_),
-            ]);
-          }
-        }),
-      ]),
-      h(RegisterModal),
-      h("div", { style: { position: "fixed", right: 0, top: 0 } }, [
-        h(AccountButton),
-      ]),
-      props.children,
+    h("div.bread-crumbs", [
+      breadCrumbs.map((crumb, i) => {
+        const last = i == breadCrumbs.length - 1;
+        if (last) {
+          return h(Link, { href: crumb.href, key: i }, [h("a", [crumb.name])]);
+        } else {
+          return h("div", { key: i }, [
+            h(Link, { href: crumb.href }, [h("a", [crumb.name])]),
+            h(Icon_),
+          ]);
+        }
+      }),
     ]),
+    h(RegisterModal),
+    h("div", { style: { position: "absolute", right: 0, top: 0 } }, [
+      h(AccountButton),
+    ]),
+    props.children,
   ]);
 }
