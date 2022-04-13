@@ -10,6 +10,8 @@ import pg, {
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import styles from "./project.module.scss";
+import axios from "axios";
+
 const h = hyperStyled(styles);
 
 export default function NewProject(props: PagePropsBaseI) {
@@ -22,10 +24,21 @@ export default function NewProject(props: PagePropsBaseI) {
   };
 
   const persistChanges = async (e: Project, c: Partial<Project>) => {
-    const { data, error } = await pg
-      .auth(props.token)
-      .from("projects")
-      .insert([e]);
+    const url = "http://localhost:3001/projects";
+    const res = await axios.post(
+      url,
+      {
+        ...e,
+      },
+      {
+        headers: { Authorization: `Bearer ${props.token}` },
+      }
+    );
+    // const { data, error } = await pg
+    //   .auth(props.token)
+    //   .from("projects")
+    //   .insert([e]);
+    console.log(res);
     router.push("/");
     return data[0];
   };
