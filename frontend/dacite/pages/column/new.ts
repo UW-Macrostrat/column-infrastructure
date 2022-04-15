@@ -1,25 +1,24 @@
 import { hyperStyled } from "@macrostrat/hyper";
-import pg, {
-  usePostgrest,
+import {
   BasePage,
   ColumnGroupI,
   ColumnEditor,
   ColumnForm,
+  useTableSelect,
+  tableInsert,
 } from "../../src";
 import { useRouter } from "next/router";
 import styles from "./column.module.scss";
 import { Spinner } from "@blueprintjs/core";
-import { createLink } from "../../src/components/helpers";
 const h = hyperStyled(styles);
 
 const getData = (project_id: string) => {
   // get all col_groups for project, find one matches col_group_id
-  const colGroups: Partial<ColumnGroupI>[] = usePostgrest(
-    pg
-      .from("col_group_view")
-      .select("id, col_group, col_group_long")
-      .match({ project_id: project_id })
-  );
+  const colGroups: Partial<ColumnGroupI>[] = useTableSelect({
+    tableName: "col_group_view",
+    columns: "id, col_group, col_group_long",
+    match: { project_id: project_id },
+  });
   return colGroups;
 };
 
@@ -31,8 +30,10 @@ export default function NewColumn() {
   if (!colGroups) return h(Spinner);
   const curColGroup = colGroups.filter((cg) => cg.id == col_group_id);
 
-  const persistChanges = async (e: ColumnForm, c: Partial<ColumnForm>) => {
-    console.log(e, c);
+  const persistChanges = async (
+    e: ColumnForm,
+    changes: Partial<ColumnForm>
+  ) => {
     //create the correct column object for persistence.
     //       project_id, col_group_id, col (#), col_name, status_code, col_type
     //get the id back and enter that into the ref_col table
@@ -44,16 +45,23 @@ export default function NewColumn() {
       status_code: "in process",
       col_type: "column",
     };
-    const { data, error } = await pg.from("cols").insert([newColumn]);
+
+    const { data, error } = await tableInsert({
+      tableName: "cols",
+      row: newColumn,
+    });
+
     if (!error) {
+      // create new col_refs from new id
       const col_id: number = data[0].id;
       const ref_col = { ref_id: e.ref.id, col_id: col_id };
-      const { data: data_, error } = await pg
-        .from("col_refs")
-        .insert([ref_col]);
+
+      const { data: data_, error } = await tableInsert({
+        tableName: "col_refs",
+        row: ref_col,
+      });
+
       if (!error) {
-        const url = createLink("/column-groups", { project_id: project_id });
-        router.push(url);
         return e;
       } else {
         //catch errror

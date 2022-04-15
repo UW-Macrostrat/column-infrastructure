@@ -1,10 +1,11 @@
 import { hyperStyled } from "@macrostrat/hyper";
 import { Spinner } from "@blueprintjs/core";
-import pg, {
+import {
   StratNameI,
-  usePostgrest,
   BasePage,
   StratNameEditor,
+  useTableSelect,
+  tableUpdate,
 } from "../../src";
 import { useRouter } from "next/router";
 import styles from "./stratname.module.scss";
@@ -18,21 +19,23 @@ export default function EditColumnGroup() {
 
   if (!strat_name_id) return h(Spinner);
 
-  const strat_names: StratNameI[] = usePostgrest(
-    pg
-      .from("strat_names_view")
-      .select()
-      .match({ id: strat_name_id })
-  );
+  const strat_names: StratNameI[] = useTableSelect({
+    tableName: "strat_names_view",
+    match: parseInt(strat_name_id),
+  });
 
   if (!strat_names) return h(Spinner);
 
-  const persistChanges = async (e: StratNameI, c: Partial<StratNameI>) => {
-    const { data, error } = await pg
-      .from("strat_names")
-      .update(c)
-      .match({ id: e.id });
-    console.log(e, c);
+  const persistChanges = async (
+    e: StratNameI,
+    changes: Partial<StratNameI>
+  ) => {
+    const { data, error } = await tableUpdate({
+      tableName: "strat_names",
+      changes,
+      id: e.id,
+    });
+
     if (!error) {
       router.push(createLink("/units/edit", { ...router.query }));
       return data[0];

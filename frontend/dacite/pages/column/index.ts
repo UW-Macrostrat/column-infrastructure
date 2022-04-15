@@ -1,7 +1,7 @@
 import h from "@macrostrat/hyper";
 import { useRouter } from "next/router";
-import pg, {
-  usePostgrest,
+import {
+  useTableSelect,
   IColumnSection,
   Row,
   BasePage,
@@ -17,13 +17,11 @@ position_bottom. Sets a bottom and top strat_name based on this
 sorting. 
 */
 function dataPreProcess(col_id: any) {
-  const colSections: IColumnSection[] = usePostgrest(
-    pg
-      .from("col_sections")
-      .select()
-      .match({ col_id })
-    // .not("section_id", "is", null)
-  );
+  const colSections: IColumnSection[] = useTableSelect({
+    tableName: "col_sections",
+    match: { col_id: col_id },
+  });
+
   if (!colSections) return [];
   const col_name = colSections[0]["col_name"];
   let data: any = {};
@@ -31,7 +29,6 @@ function dataPreProcess(col_id: any) {
   Create a unique object for each section
   and calculate the highest and lowest strat_name
   */
-  console.log(colSections);
   colSections.forEach((col) => {
     const { section_id, position_bottom, top, bottom } = col;
     if (!data[section_id]) {
@@ -71,7 +68,6 @@ export default function ColumnGroup() {
   if (!col_id) return h("div");
 
   const { data, col_name } = dataPreProcess(col_id);
-  console.log("data", data);
 
   if (!data) return h("div");
   const headers = Object.keys(data[0]);

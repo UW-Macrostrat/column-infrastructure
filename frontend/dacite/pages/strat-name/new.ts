@@ -1,5 +1,11 @@
 import { hyperStyled } from "@macrostrat/hyper";
-import pg, { StratNameI, BasePage, StratNameEditor } from "../../src";
+import {
+  StratNameI,
+  BasePage,
+  StratNameEditor,
+  tableInsert,
+  tableUpdate,
+} from "../../src";
 import { useRouter } from "next/router";
 import styles from "./stratname.module.scss";
 import { createLink } from "../../src/components/helpers";
@@ -11,14 +17,19 @@ export default function EditColumnGroup() {
   const { name, unit_id } = router.query;
 
   const persistChanges = async (e: StratNameI, c: Partial<StratNameI>) => {
-    const { data, error } = await pg.from("strat_names").insert([e]);
+    const { data, error } = await tableInsert({
+      tableName: "strat_names",
+      row: e,
+    });
     console.log(data);
     const strat_name_id: number = data[0].id;
     if (!error) {
-      const { data, error } = await pg
-        .from("units")
-        .update({ strat_name_id: strat_name_id })
-        .match({ id: unit_id });
+      const { data, error } = await tableUpdate({
+        tableName: "units",
+        changes: { strat_name_id: strat_name_id },
+        id: parseInt(unit_id),
+      });
+
       router.push(createLink("/units/edit", { ...router.query }));
       // return data[0];
     } else {
@@ -27,7 +38,7 @@ export default function EditColumnGroup() {
   };
 
   let model: Partial<StratNameI> = {};
-  if (name != undefined) {
+  if (name != undefined && typeof name == "string") {
     model.strat_name = name;
   }
 

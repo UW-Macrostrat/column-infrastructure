@@ -1,5 +1,5 @@
 import { hyperStyled } from "@macrostrat/hyper";
-import pg, { usePostgrest, BasePage, Project, ProjectEditor } from "../../src";
+import { tableInsert, BasePage, Project, ProjectEditor } from "../../src";
 import { useRouter } from "next/router";
 import styles from "./project.module.scss";
 const h = hyperStyled(styles);
@@ -13,9 +13,11 @@ export default function NewProject() {
     timescale_id: undefined,
   };
 
-  const persistChanges = async (e: Project, c: Partial<Project>) => {
-    const { data, error } = await pg.from("projects").insert([e]);
-    router.push("/");
+  const persistChanges = async (project: Project, c: Partial<Project>) => {
+    const { data, error } = await tableInsert({
+      row: project,
+      tableName: "projects",
+    });
     return data[0];
   };
 

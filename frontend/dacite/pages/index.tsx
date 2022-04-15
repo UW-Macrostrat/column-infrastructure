@@ -1,6 +1,6 @@
 import h from "@macrostrat/hyper";
-import pg, {
-  usePostgrest,
+import {
+  useTableSelect,
   Row,
   Project,
   BasePage,
@@ -10,7 +10,7 @@ import pg, {
 } from "../src";
 
 function Projects() {
-  const projects: Project[] = usePostgrest(pg.from("projects"));
+  const projects: Project[] = useTableSelect({ tableName: "projects" });
   if (!projects) return h("div");
 
   const headers = Object.keys(projects[0]);

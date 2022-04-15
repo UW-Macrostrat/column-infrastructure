@@ -1,7 +1,6 @@
 import h from "@macrostrat/hyper";
 import { useRouter } from "next/router";
-import pg, {
-  usePostgrest,
+import {
   Project,
   ColumnGroupI,
   Row,
@@ -9,25 +8,24 @@ import pg, {
   Table,
   CreateButton,
   EditButton,
+  useTableSelect,
 } from "../../src";
 
 export default function ColumnGroup() {
   const router = useRouter();
   const { project_id } = router.query;
   if (!project_id) return h("div");
-  const projects: Project[] = usePostgrest(
-    pg
-      .from("projects")
-      .select()
-      .match({ id: project_id })
-      .limit(1)
-  );
-  const columnGroups: ColumnGroupI[] = usePostgrest(
-    pg
-      .from("col_group_view")
-      .select()
-      .match({ project_id: project_id })
-  );
+
+  const projects: Project[] = useTableSelect({
+    tableName: "projects",
+    match: parseInt(project_id),
+    limit: 1,
+  });
+
+  const columnGroups: ColumnGroupI[] = useTableSelect({
+    tableName: "col_group_view",
+    match: { project_id: project_id },
+  });
 
   if (!columnGroups || !projects) return h("div");
   const project = projects[0];
