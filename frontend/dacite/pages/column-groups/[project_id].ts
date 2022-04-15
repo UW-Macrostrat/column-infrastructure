@@ -1,5 +1,5 @@
 import h from "@macrostrat/hyper";
-import { useRouter } from "next/router";
+import { GetServerSidePropsContext } from "next";
 import {
   Project,
   ColumnGroupI,
@@ -11,14 +11,10 @@ import {
   useTableSelect,
 } from "../../src";
 
-export default function ColumnGroup() {
-  const router = useRouter();
-  const { project_id } = router.query;
-  if (!project_id) return h("div");
-
+export default function ColumnGroup({ project_id }: { project_id: number }) {
   const projects: Project[] = useTableSelect({
     tableName: "projects",
-    match: parseInt(project_id),
+    match: { id: project_id },
     limit: 1,
   });
 
@@ -30,11 +26,11 @@ export default function ColumnGroup() {
   if (!columnGroups || !projects) return h("div");
   const project = projects[0];
 
-  return h(BasePage, { query: router.query }, [
+  return h(BasePage, { query: { project_id } }, [
     h("h3", [
       project.project,
       h(CreateButton, {
-        href: `/column-groups/new?project_id=${project_id}&col_id=null`,
+        href: `/column-groups/new/${project_id}`,
         text: "Add New Group",
       }),
     ]),
@@ -48,7 +44,7 @@ export default function ColumnGroup() {
               h("h3", { style: { margin: 0 } }, colGroup.col_group_long),
               h(EditButton, {
                 small: true,
-                href: `/column-groups/edit?project_id=${project.id}&col_group_id=${colGroup.id}`,
+                href: `/column-groups/edit/${colGroup.id}`,
               }),
             ]),
             h(Table, { interactive: true }, [
@@ -66,7 +62,7 @@ export default function ColumnGroup() {
                     Row,
                     {
                       key: i,
-                      href: `/column?project_id=${project_id}&col_group_id=${colGroup.id}&col_id=${id.col_id}`,
+                      href: `/column/${id.col_id}`,
                     },
                     [
                       h("td", [id.col_id]),
@@ -79,7 +75,7 @@ export default function ColumnGroup() {
               ]),
             ]),
             h(CreateButton, {
-              href: `/column/new?project_id=${project.id}&col_group_id=${colGroup.id}&col_id=null`,
+              href: `/column/new/${colGroup.id}`,
               text: "Add New Column",
             }),
           ]
@@ -87,4 +83,12 @@ export default function ColumnGroup() {
       }),
     ]),
   ]);
+}
+
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  const {
+    query: { project_id },
+  } = ctx;
+
+  return { props: { project_id } };
 }

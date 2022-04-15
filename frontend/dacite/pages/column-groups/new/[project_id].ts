@@ -5,21 +5,15 @@ import pg, {
   Project,
   ColumnGroupEditor,
   ColumnGroupI,
-} from "../../src";
-import { useRouter } from "next/router";
-import styles from "./colgroup.module.scss";
+  CancelButton,
+} from "../../../src";
+import styles from "../colgroup.module.scss";
 import { Spinner } from "@blueprintjs/core";
 const h = hyperStyled(styles);
 
-export default function NewProject() {
-  const router = useRouter();
-  const { project_id } = router.query;
-
+export default function NewColumnGroup({ project_id }: { project_id: number }) {
   const projects: Project[] = usePostgrest(
-    pg
-      .from("projects")
-      .select()
-      .match({ id: project_id })
+    pg.from("projects").select().match({ id: project_id })
   );
 
   if (!projects) return h(Spinner);
@@ -37,7 +31,6 @@ export default function NewProject() {
       .from("col_groups")
       .insert([{ ...e, project_id: project_id }]);
     if (!error) {
-      router.push(`/column-groups?project_id=${project_id}`);
       return data[0];
     } else {
       //catch error
@@ -46,9 +39,19 @@ export default function NewProject() {
 
   const project = projects[0];
 
-  return h(BasePage, { query: router.query }, [
+  return h(BasePage, { query: { project_id } }, [
     h("h3", ["Create a New Column Group for ", project.project]),
     //@ts-ignore
     h(ColumnGroupEditor, { model: newColumnGroup, persistChanges }),
+    h(CancelButton, { href: `/column-groups/${project_id}` }),
   ]);
+}
+
+//@ts-ignore
+export async function getServerSideProps(ctx) {
+  const {
+    query: { project_id },
+  } = ctx;
+
+  return { props: { project_id } };
 }

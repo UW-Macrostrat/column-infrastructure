@@ -1,19 +1,16 @@
 import h from "@macrostrat/hyper";
 import pg, { usePostgrest, Row, UnitsView, CreateButton } from "../../src";
 import { BasePage, Table } from "../../src";
-import { useRouter } from "next/router";
 import { Spinner, Button } from "@blueprintjs/core";
-import { createLink } from "../../src/components/helpers";
+import { GetServerSideProps } from "next";
 
-function Units() {
-  const router = useRouter();
-  const { project_id, col_id, col_group_id, section_id } = router.query;
+function Units({ section_id }: { section_id: string }) {
   const units: UnitsView[] = usePostgrest(
     pg
       .from("units_view")
       .select()
       .order("age_top", { ascending: true })
-      .match({ section_id: section_id, col_id: col_id })
+      .match({ section_id: section_id })
   );
 
   const headers = [
@@ -26,14 +23,11 @@ function Units() {
   ];
 
   if (!units) return h(Spinner);
-  return h(BasePage, { query: router.query }, [
+  return h(BasePage, { query: { section_id: parseInt(section_id) } }, [
     h("h3", [
       "Units",
       h(CreateButton, {
-        href: createLink("/units/new", {
-          ...router.query,
-          unit_id: undefined,
-        }),
+        href: `/units/new/${section_id}?col_id=${units[0].col_id}`,
         text: "Add new unit",
       }),
     ]),
@@ -51,10 +45,7 @@ function Units() {
             Row,
             {
               key: i,
-              href: createLink("/units/edit", {
-                ...router.query,
-                unit_id: unit.id,
-              }),
+              href: `/units/edit/${unit.id}`,
             },
             [
               h("td", [unit.id]),
@@ -74,5 +65,9 @@ function Units() {
     ]),
   ]);
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  return { props: { section_id: ctx.query.section_id } };
+};
 
 export default Units;

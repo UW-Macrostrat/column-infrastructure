@@ -1,41 +1,45 @@
 import { hyperStyled } from "@macrostrat/hyper";
-import {
+import pg, {
+  usePostgrest,
   useTableSelect,
   tableUpdate,
   BasePage,
-  ColumnGroupI,
   ColumnEditor,
   ColumnForm,
-} from "../../src";
-import { useRouter } from "next/router";
-import styles from "./column.module.scss";
+} from "../../../src";
+import styles from "../column.module.scss";
 import { Spinner } from "@blueprintjs/core";
-import { createLink } from "../../src/components/helpers";
+import { GetServerSideProps } from "next";
 const h = hyperStyled(styles);
 
-const getData = (project_id: any, col_id: any) => {
+const getData = (col_id: any) => {
   // get all col_groups for project, find one matches col_group_id
-  const colGroups: Partial<ColumnGroupI>[] = useTableSelect({
-    tableName: "col_group_view",
-    columns: "id, col_group, col_group_long",
-    match: { project_id: project_id },
-  });
+  // const colGroups: Partial<ColumnGroupI>[] = useTableSelect({
+  //   tableName: "col_groups",
+  //   columns: "id, col_group, col_group_long",
+  //   match: { project_id: project_id },
+  // });
 
   const column: ColumnForm[] = useTableSelect({
     tableName: "col_form",
     match: { col_id: col_id },
   });
 
-  return { colGroups, column };
+  // fancy join
+  //https://supabase.com/docs/reference/javascript/select#query-foreign-tables
+  const data = usePostgrest(
+    pg.from("cols").select("col_groups!cols_col_group_id_fkey1(*)").limit(1)
+  );
+  console.log(data);
+
+  return { colGroups: data, column };
 };
 
-export default function EditColumn() {
-  const router = useRouter();
-  const { project_id, col_group_id, col_id } = router.query;
-  const { colGroups, column } = getData(project_id, col_id);
+export default function EditColumn({ col_id }: { col_id: string }) {
+  const { colGroups, column } = getData(col_id);
 
   if (!colGroups || !column) return h(Spinner);
-  const curColGroup = colGroups.filter((cg) => cg.id == col_group_id);
+  const curColGroup = colGroups[0].col_groups;
 
   const persistChanges = async (
     e: ColumnForm,
@@ -71,10 +75,6 @@ export default function EditColumn() {
       if (error) {
         //catch errror
       }
-      const url = createLink("/column-groups", {
-        project_id: project_id,
-      });
-      router.push(url);
       return e;
     } else {
       //catch error
@@ -85,15 +85,22 @@ export default function EditColumn() {
     return e;
   };
 
-  return h(BasePage, { query: router.query }, [
+  return h(BasePage, { query: { col_id: parseInt(col_id) } }, [
     h("h3", [
-      `Edit column ${column[0].col_name}, part of ${curColGroup[0].col_group_long}(${curColGroup[0].col_group})`,
+      `Edit column ${column[0].col_name}, part of ${curColGroup.col_group_long}(${curColGroup.col_group})`,
     ]),
     //@ts-ignore
     h(ColumnEditor, {
       model: column[0],
       persistChanges,
-      curColGroup: curColGroup[0],
+      curColGroup: curColGroup,
     }),
   ]);
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const {
+    query: { col_id },
+  } = ctx;
+  return { props: { col_id } };
+};

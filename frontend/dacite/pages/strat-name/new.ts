@@ -8,11 +8,10 @@ import {
 } from "../../src";
 import { useRouter } from "next/router";
 import styles from "./stratname.module.scss";
-import { createLink } from "../../src/components/helpers";
 
 const h = hyperStyled(styles);
 
-export default function EditColumnGroup() {
+export default function NewStratName() {
   const router = useRouter();
   const { name, unit_id } = router.query;
 
@@ -30,8 +29,7 @@ export default function EditColumnGroup() {
         id: parseInt(unit_id),
       });
 
-      router.push(createLink("/units/edit", { ...router.query }));
-      // return data[0];
+      return data[0];
     } else {
       console.error(error);
     }

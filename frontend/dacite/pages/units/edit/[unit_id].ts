@@ -1,9 +1,9 @@
 import { hyperStyled } from "@macrostrat/hyper";
-import { UnitEditorModel, BasePage, UnitEditor } from "../../src";
-import { useRouter } from "next/router";
+import { UnitEditorModel, BasePage, UnitEditor } from "../../../src";
 import { Spinner } from "@blueprintjs/core";
 import { getUnitData, persistUnitChanges } from "./edit-helpers";
-import styles from "./units.module.scss";
+import styles from "../units.module.scss";
+import { GetServerSidePropsContext } from "next";
 const h = hyperStyled(styles);
 
 /* 
@@ -12,12 +12,8 @@ Needs a strat_name displayer, we'll be stricter with editing that
 Need interval suggest component (2), Need A color picker, Contact suggests.
 Tags for liths and environs; adding components for those too.
 */
-function UnitEdit() {
-  const router = useRouter();
-  const { unit_id } = router.query;
-  if (!unit_id) return h(Spinner);
-
-  const { units, envs, liths } = getUnitData(unit_id);
+function UnitEdit({ unit_id }: { unit_id: string }) {
+  const { units, envs, liths } = getUnitData(parseInt(unit_id));
   if (!units || !envs || !liths) return h(Spinner);
   const unit = units[0];
 
@@ -30,7 +26,7 @@ function UnitEdit() {
     return await persistUnitChanges(unit, envs, liths, updatedModel, changeSet);
   };
 
-  return h(BasePage, { query: router.query }, [
+  return h(BasePage, { query: { unit_id: parseInt(unit_id) } }, [
     h("h3", [
       "Edit Unit: ",
       unit.unit_strat_name ||
@@ -41,4 +37,7 @@ function UnitEdit() {
   ]);
 }
 
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  return { props: { unit_id: ctx.query.unit_id } };
+}
 export default UnitEdit;

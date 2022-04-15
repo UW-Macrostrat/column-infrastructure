@@ -1,4 +1,5 @@
 import { hyperStyled } from "@macrostrat/hyper";
+import { GetServerSideProps } from "next";
 import {
   BasePage,
   ColumnGroupI,
@@ -6,29 +7,26 @@ import {
   ColumnForm,
   useTableSelect,
   tableInsert,
-} from "../../src";
-import { useRouter } from "next/router";
-import styles from "./column.module.scss";
+} from "../../../src";
+import styles from "../column.module.scss";
 import { Spinner } from "@blueprintjs/core";
 const h = hyperStyled(styles);
 
-const getData = (project_id: string) => {
+const getData = (col_group_id: number) => {
   // get all col_groups for project, find one matches col_group_id
   const colGroups: Partial<ColumnGroupI>[] = useTableSelect({
-    tableName: "col_group_view",
+    tableName: "col_groups",
     columns: "id, col_group, col_group_long",
-    match: { project_id: project_id },
+    match: col_group_id,
   });
   return colGroups;
 };
 
-export default function NewColumn() {
-  const router = useRouter();
-  const { project_id, col_group_id } = router.query;
-  const colGroups = getData(project_id);
+export default function NewColumn({ col_group_id }: { col_group_id: string }) {
+  const colGroups = getData(parseInt(col_group_id));
 
   if (!colGroups) return h(Spinner);
-  const curColGroup = colGroups.filter((cg) => cg.id == col_group_id);
+  const colGroup = colGroups[0];
 
   const persistChanges = async (
     e: ColumnForm,
@@ -38,7 +36,7 @@ export default function NewColumn() {
     //       project_id, col_group_id, col (#), col_name, status_code, col_type
     //get the id back and enter that into the ref_col table
     const newColumn = {
-      project_id,
+      project_id: colGroup.project_id,
       col_group_id,
       col: e.col_number,
       col_name: e.col_name,
@@ -71,16 +69,23 @@ export default function NewColumn() {
     }
   };
 
-  return h(BasePage, { query: router.query }, [
+  return h(BasePage, { query: { col_group_id: parseInt(col_group_id) } }, [
     h("h3", [
-      `Add a new column to ${curColGroup[0].col_group_long}(${curColGroup[0].col_group})`,
+      `Add a new column to ${colGroup.col_group_long}(${colGroup.col_group})`,
     ]),
     //@ts-ignore
     h(ColumnEditor, {
       model: {},
-      colGroups,
       persistChanges,
-      curColGroup: curColGroup[0],
+      curColGroup: colGroup,
     }),
   ]);
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const {
+    query: { col_group_id },
+  } = ctx;
+
+  return { props: { col_group_id } };
+};

@@ -6,11 +6,11 @@ import pg, {
   EnvironUnit,
   LithUnit,
   UnitEditorModel,
-} from "../../src";
+} from "../../../src";
 import {
   conductChangeSet,
   detectDeletionsAndAdditions,
-} from "../../src/components/helpers";
+} from "../../../src/components/helpers";
 
 export function getUnitData(unit_id: number) {
   console.log(unit_id);

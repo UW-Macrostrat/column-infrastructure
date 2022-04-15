@@ -1,16 +1,6 @@
-import { useState } from "react";
 import { hyperStyled } from "@macrostrat/hyper";
-import { Suggest, ItemRenderer, ItemPredicate } from "@blueprintjs/select";
 import { Project, TimeScale } from "../../types";
-import {
-  Button,
-  FormGroup,
-  InputGroup,
-  MenuItem,
-  Icon,
-  Spinner,
-  TextArea,
-} from "@blueprintjs/core";
+import { FormGroup, InputGroup, Spinner, TextArea } from "@blueprintjs/core";
 import {
   ModelEditor,
   useModelEditor,
