@@ -10,6 +10,7 @@ import {
   TagContainerCell,
   ColorBlock,
   Table,
+  FeatureCell,
 } from "../../index";
 import {
   Tooltip2 as Tooltip,
@@ -23,7 +24,6 @@ import {
 } from "@macrostrat/ui-components/lib/esm";
 import styles from "../comp.module.scss";
 import {
-  CancelButton,
   EnvTagsAdd,
   InfoCell,
   LithTagsAdd,
@@ -117,10 +117,8 @@ function LithTags() {
 }
 
 function UnitThickness() {
-  const {
-    model,
-    actions,
-  }: { model: UnitEditorModel; actions: any } = useModelEditor();
+  const { model, actions }: { model: UnitEditorModel; actions: any } =
+    useModelEditor();
   const { unit } = model;
 
   const update = (field: string, e: any) => {
@@ -128,15 +126,13 @@ function UnitThickness() {
   };
 
   return h(React.Fragment, [
-    h(InfoCell, { text: "Min-Thick: " }),
-    h("td", [
+    h(FeatureCell, { text: "Min-Thick" }, [
       h(NumericInput, {
         onValueChange: (e) => update("min_thick", e),
         defaultValue: unit?.min_thick || undefined,
       }),
     ]),
-    h(InfoCell, { text: "Max-Thick: " }),
-    h("td", [
+    h(FeatureCell, { text: "Max-Thick: " }, [
       h(NumericInput, {
         onValueChange: (e) => update("max_thick", e),
         defaultValue: unit?.max_thick || undefined,
@@ -187,8 +183,7 @@ function StratName() {
   };
 
   return h("tr", [
-    h(InfoCell, { text: "Stratigraphic Name: " }),
-    h("td", [
+    h(FeatureCell, { text: "Stratigraphic Name: " }, [
       h(StratNameSuggest, {
         initialSelected,
         onChange: updateStratName,
@@ -213,8 +208,7 @@ function UnitPosition(props: UnitPositionI) {
     : "Position Top: ";
 
   return h(React.Fragment, [
-    h(InfoCell, { text: positionLabel }),
-    h("td", [
+    h(FeatureCell, { text: positionLabel }, [
       h(NumericInput, {
         onValueChange: props.onPositionChange,
         defaultValue: props.position_bottom || props.position_top,
@@ -302,8 +296,7 @@ function UnitEdit() {
           }),
         ]),
         h("tr", [
-          h(InfoCell, { text: "Color: " }),
-          h("td", [
+          h(FeatureCell, { text: "Color: " }, [
             h(ColorBlock, {
               onChange: (color) => {
                 actions.updateState({
@@ -316,8 +309,7 @@ function UnitEdit() {
           h(UnitThickness),
         ]),
         h("tr", [
-          h(InfoCell, { text: "Notes: " }),
-          h("td", { colSpan: 5 }, [
+          h(FeatureCell, { text: "Notes: ", colSpan: 5 }, [
             h(TextArea, {
               value: unit.notes,
               onChange: (e) => updateUnit("notes", e.target.value),
@@ -325,12 +317,10 @@ function UnitEdit() {
           ]),
         ]),
         h("tr", [
-          h(InfoCell, { text: "Lithologies: " }),
-          h("td", { colSpan: 5 }, [h(LithTags)]),
+          h(FeatureCell, { text: "Lithologies: ", colSpan: 5 }, [h(LithTags)]),
         ]),
         h("tr", [
-          h(InfoCell, { text: "Environments: " }),
-          h("td", { colSpan: 5 }, [h(EnvTags)]),
+          h(FeatureCell, { text: "Environments: ", colSpan: 5 }, [h(EnvTags)]),
         ]),
       ]),
     ]),

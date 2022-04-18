@@ -45,13 +45,9 @@ function ProjectEdit() {
   const {
     model,
     actions,
-    isEditing,
-    hasChanges,
   }: {
     model: Project;
     actions: any;
-    isEditing: boolean;
-    hasChanges: () => boolean;
   } = useModelEditor();
 
   const timescales: TimeScale[] = usePostgrest(pg.from("timescales"));

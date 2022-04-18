@@ -12,7 +12,6 @@ import {
 import {
   ModelEditor,
   useModelEditor,
-  ModelEditButton,
   //@ts-ignore
 } from "@macrostrat/ui-components/lib/esm";
 import styles from "../comp.module.scss";
@@ -21,7 +20,7 @@ import { MySuggest } from "../suggest";
 import { RefI } from "../../types";
 import pg, { usePostgrest } from "../../db";
 import { RefEditor } from "../ref/ref-editor";
-import { SubmitButton, CancelButton } from "..";
+import { SubmitButton } from "..";
 
 const h = hyperStyled(styles);
 

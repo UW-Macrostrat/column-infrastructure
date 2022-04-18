@@ -1,6 +1,5 @@
 import { hyperStyled } from "@macrostrat/hyper";
 import { tableInsert, BasePage, Project, ProjectEditor } from "../../src";
-import { useRouter } from "next/router";
 import styles from "./project.module.scss";
 const h = hyperStyled(styles);
 

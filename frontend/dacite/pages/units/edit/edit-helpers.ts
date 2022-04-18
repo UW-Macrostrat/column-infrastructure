@@ -13,7 +13,6 @@ import {
 } from "../../../src/components/helpers";
 
 export function getUnitData(unit_id: number) {
-  console.log(unit_id);
   const units: UnitsView[] = useTableSelect({
     tableName: "units_view",
     match: { id: unit_id },
