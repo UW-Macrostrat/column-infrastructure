@@ -335,7 +335,6 @@ function UnitEdit() {
       ]),
     ]),
     h(SubmitButton),
-    h(CancelButton, { href: "/units" }),
   ]);
 }
 

@@ -114,7 +114,6 @@ function ProjectEdit() {
       ]
     ),
     h(SubmitButton),
-    h(CancelButton, { href: "/" }),
   ]);
 }
 

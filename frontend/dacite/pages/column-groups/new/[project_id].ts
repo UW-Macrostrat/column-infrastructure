@@ -43,7 +43,6 @@ export default function NewColumnGroup({ project_id }: { project_id: number }) {
     h("h3", ["Create a New Column Group for ", project.project]),
     //@ts-ignore
     h(ColumnGroupEditor, { model: newColumnGroup, persistChanges }),
-    h(CancelButton, { href: `/column-groups/${project_id}` }),
   ]);
 }
 

@@ -133,7 +133,6 @@ function ColumnEdit({ curColGroup }: { curColGroup: Partial<ColumnGroupI> }) {
       ]),
     ]),
     h(SubmitButton),
-    h(CancelButton, { href: "/column" }),
   ]);
 }
 
