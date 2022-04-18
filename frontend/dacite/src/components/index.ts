@@ -1,6 +1,6 @@
 export * from "./table";
 export * from "./unit/interval-suggest";
-export * from "./base-page";
+export * from "./routing/base-page";
 export * from "./tag";
 export * from "./unit/color";
 export * from "./unit/unit-editor";

@@ -57,7 +57,7 @@ function CancelButton(props: CancelButtonI) {
   const router = useRouter();
 
   const { href } = props;
-  return h(Link, { href: createLink(href, router.query) }, [
+  return h(Link, { href }, [
     h(
       Button,
       {

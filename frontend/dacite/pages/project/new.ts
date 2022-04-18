@@ -5,8 +5,6 @@ import styles from "./project.module.scss";
 const h = hyperStyled(styles);
 
 export default function NewProject() {
-  const router = useRouter();
-
   const newProject: Project = {
     project: "",
     descrip: "",
@@ -21,7 +19,7 @@ export default function NewProject() {
     return data[0];
   };
 
-  return h(BasePage, { query: router.query }, [
+  return h(BasePage, { query: {} }, [
     h("h3", ["Create a New Project"]),
     //@ts-ignore
     h(ProjectEditor, { project: newProject, persistChanges }),

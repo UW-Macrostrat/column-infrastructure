@@ -1,5 +1,5 @@
 import h from "@macrostrat/hyper";
-import { useRouter } from "next/router";
+import { GetServerSideProps } from "next";
 import {
   useTableSelect,
   IColumnSection,
@@ -9,7 +9,6 @@ import {
   EditButton,
   CreateButton,
 } from "../../src";
-import { createLink } from "../../src/components/helpers";
 
 /* 
 Creates section arrays by finding the lowest posistion_bottom and highest
@@ -62,11 +61,7 @@ function dataPreProcess(col_id: any) {
   return { data, col_name };
 }
 
-export default function ColumnGroup() {
-  const router = useRouter();
-  const { col_id, project_id, col_group_id } = router.query;
-  if (!col_id) return h("div");
-
+export default function ColumnGroup({ col_id }: { col_id: string }) {
   const { data, col_name } = dataPreProcess(col_id);
 
   if (!data) return h("div");
@@ -74,13 +69,11 @@ export default function ColumnGroup() {
 
   let dat = data.filter((d) => d.section_id != null);
 
-  return h(BasePage, { query: router.query }, [
+  return h(BasePage, { query: { col_id: parseInt(col_id) } }, [
     h("h3", [
       `Sections for ${col_name}`,
       h(EditButton, {
-        href: createLink("/column/edit", {
-          ...router.query,
-        }),
+        href: `/column/edit/${col_id}`,
       }),
     ]),
     h.if(dat.filter((d) => d.section_id != null).length == 0)("div", [
@@ -89,10 +82,7 @@ export default function ColumnGroup() {
       ]),
       h(CreateButton, {
         minimal: false,
-        href: createLink("/units/new", {
-          ...router.query,
-          section_id: undefined,
-        }),
+        href: `/units/new/undefined?col_id=${col_id}`,
         text: "Create Unit",
       }),
     ]),
@@ -111,10 +101,7 @@ export default function ColumnGroup() {
               Row,
               {
                 key: i,
-                href: createLink("/units", {
-                  ...router.query,
-                  section_id: col.section_id,
-                }),
+                href: `/units/${col.section_id}`,
               },
               [
                 h("td", [col.section_id]),
@@ -128,12 +115,17 @@ export default function ColumnGroup() {
       ]),
       h(CreateButton, {
         minimal: false,
-        href: createLink("/units/new", {
-          ...router.query,
-          section_id: undefined,
-        }),
+        href: `/units/new/undefined?col_id=${col_id}`,
         text: "Create Unit in new Section",
       }),
     ]),
   ]);
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const {
+    query: { col_id },
+  } = ctx;
+
+  return { props: { col_id } };
+};

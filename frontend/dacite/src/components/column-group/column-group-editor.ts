@@ -71,7 +71,6 @@ function ColumnGroupEdit() {
       ]
     ),
     h(SubmitButton),
-    h(CancelButton, { href: "/column-groups" }),
   ]);
 }
 

@@ -1,4 +1,4 @@
-import pg, { tableInsert, UnitEditorModel, UnitsView } from "../../src";
+import pg, { tableInsert, UnitEditorModel, UnitsView } from "../../../src";
 
 const keys = [
   "strat_name",
@@ -30,13 +30,11 @@ export const persistNewUnitChanges = async (
   section_id: any,
   col_id: number
 ) => {
-  console.log(typeof section_id);
   let s_id = section_id;
   if (s_id == null || s_id === "undefined") {
     // we're making a new section with this unit
     console.log("Making a new section");
     s_id = await createNewSection(col_id);
-    console.log(s_id);
   }
   console.log(updatedModel, changeSet);
   let unit_id: number;

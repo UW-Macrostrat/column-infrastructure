@@ -1,5 +1,5 @@
 import h from "@macrostrat/hyper";
-import {
+import pg, {
   useTableSelect,
   Row,
   Project,
@@ -9,9 +9,9 @@ import {
   CreateButton,
 } from "../src";
 
-function Projects() {
-  const projects: Project[] = useTableSelect({ tableName: "projects" });
-  if (!projects) return h("div");
+function Projects({ projects }: { projects: Project[] }) {
+  // const projects: Project[] = useTableSelect({ tableName: "projects" });
+  // if (!projects) return h("div");
 
   const headers = Object.keys(projects[0]);
 
@@ -20,7 +20,7 @@ function Projects() {
       "Choose a Project",
       h(CreateButton, {
         minimal: true,
-        href: "/project/new?project_id=null",
+        href: "/project/new",
         text: "Create New Project",
       }),
     ]),
@@ -34,25 +34,30 @@ function Projects() {
       ]),
       h("tbody", [
         projects.map((project, i) => {
-          return h(
-            Row,
-            { key: i, href: `/column-groups?project_id=${project.id}` },
-            [
-              h("td", [project.id]),
-              h("td", [project.project]),
-              h("td", [project.descrip]),
-              h("td", [project.timescale_id]),
-              h("td", [
-                h(EditButton, {
-                  href: `/project/edit?project_id=${project.id}`,
-                }),
-              ]),
-            ]
-          );
+          return h(Row, { key: i, href: `/column-groups/${project.id}` }, [
+            h("td", [project.id]),
+            h("td", [project.project]),
+            h("td", [project.descrip]),
+            h("td", [project.timescale_id]),
+            h("td", [
+              h(EditButton, {
+                href: `/project/edit/${project.id}`,
+              }),
+            ]),
+          ]);
         }),
       ]),
     ]),
   ]);
+}
+
+export async function getServerSideProps(ctx) {
+  console.log(ctx);
+
+  const { data, error } = await pg.from("projects").select();
+  const projects: Project[] = data;
+
+  return { props: { projects } };
 }
 
 export default Projects;

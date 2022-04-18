@@ -5,15 +5,13 @@ import {
   BasePage,
   Project,
   ProjectEditor,
-} from "../../src";
-import { useRouter } from "next/router";
-import styles from "./project.module.scss";
+} from "../../../src";
+import styles from "../project.module.scss";
 import { Spinner } from "@blueprintjs/core";
+import { GetServerSidePropsContext } from "next";
 const h = hyperStyled(styles);
 
-export default function NewProject() {
-  const router = useRouter();
-  const { project_id } = router.query;
+export default function NewProject({ project_id }: { project_id: string }) {
   const project: Project = useTableSelect({
     tableName: "projects",
     match: parseInt(project_id),
@@ -29,18 +27,25 @@ export default function NewProject() {
       changes,
     });
 
-    console.log("Error", error);
     if (!error) {
-      router.push("/");
       return data[0];
     } else {
       // error catching here
     }
   };
 
-  return h(BasePage, { query: router.query }, [
+  return h(BasePage, { query: {} }, [
     h("h3", ["Create a New Project"]),
     //@ts-ignore
     h(ProjectEditor, { project: project[0], persistChanges }),
   ]);
+}
+
+export async function getServerSideProps({
+  query,
+  ...rest
+}: GetServerSidePropsContext) {
+  const { project_id } = query;
+
+  return { props: { project_id } };
 }

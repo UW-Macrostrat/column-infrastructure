@@ -1,34 +1,27 @@
 import { hyperStyled } from "@macrostrat/hyper";
-import pg, {
-  usePostgrest,
+import {
   useTableSelect,
   BasePage,
-  Project,
   ColumnGroupEditor,
   ColumnGroupI,
   tableUpdate,
-} from "../../src";
-import { useRouter } from "next/router";
-import styles from "./colgroup.module.scss";
+} from "../../../src";
+import styles from "../colgroup.module.scss";
 import { Spinner } from "@blueprintjs/core";
+import { GetServerSidePropsContext } from "next";
 const h = hyperStyled(styles);
 
-export default function EditColumnGroup() {
-  const router = useRouter();
-  const { project_id, col_group_id } = router.query;
-
-  const projects: Project[] = useTableSelect({
-    tableName: "projects",
-    match: parseInt(project_id),
-    limit: 1,
-  });
-
+export default function EditColumnGroup({
+  col_group_id,
+}: {
+  col_group_id: string;
+}) {
   const colGroups: Partial<ColumnGroupI>[] = useTableSelect({
     tableName: "col_groups",
     match: parseInt(col_group_id),
   });
 
-  if (!projects || !colGroups) return h(Spinner);
+  if (!colGroups) return h(Spinner);
 
   const columnGroup: Partial<ColumnGroupI> = colGroups[0];
 
@@ -42,18 +35,23 @@ export default function EditColumnGroup() {
       id: e.id || 0,
     });
     if (!error) {
-      router.push(`/column-groups?project_id=${project_id}`);
       return data[0];
     } else {
       console.error(error);
     }
   };
 
-  const project = projects[0];
-
-  return h(BasePage, { query: router.query }, [
-    h("h3", ["Create a New Column Group for ", project.project]),
+  return h(BasePage, { query: { col_group_id: parseInt(col_group_id) } }, [
+    h("h3", ["Edit Column Group: ", columnGroup.col_group_long]),
     //@ts-ignore
     h(ColumnGroupEditor, { model: columnGroup, persistChanges }),
   ]);
+}
+
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  const {
+    query: { col_group_id },
+  } = ctx;
+
+  return { props: { col_group_id } };
 }
