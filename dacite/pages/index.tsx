@@ -1,6 +1,5 @@
 import h from "@macrostrat/hyper";
 import pg, {
-  useTableSelect,
   Row,
   Project,
   BasePage,
@@ -10,9 +9,6 @@ import pg, {
 } from "../src";
 
 function Projects({ projects }: { projects: Project[] }) {
-  // const projects: Project[] = useTableSelect({ tableName: "projects" });
-  // if (!projects) return h("div");
-
   const headers = Object.keys(projects[0]);
 
   return h(BasePage, { query: {} }, [
@@ -52,8 +48,6 @@ function Projects({ projects }: { projects: Project[] }) {
 }
 
 export async function getServerSideProps(ctx) {
-  console.log(ctx);
-
   const { data, error } = await pg.from("projects").select();
   const projects: Project[] = data;
 
