@@ -19,21 +19,15 @@ function Row(props: RowProps) {
   ]);
 }
 
-interface InfoCellI {
+interface FeatureCellI {
   text: string;
-}
-function InfoCell(props: InfoCellI) {
-  return h("td", [h("h4.strat-name", [props.text])]);
-}
-
-interface FeatureCellI extends InfoCellI {
   children: ReactChild;
   colSpan?: number;
 }
 
 function FeatureCell(props: FeatureCellI) {
   return h(React.Fragment, [
-    h(InfoCell, { text: props.text }),
+    h("td", [h("h4.strat-name", [props.text])]),
     h("td", { colSpan: props.colSpan }, [props.children]),
   ]);
 }
@@ -56,4 +50,4 @@ function Table(props: TableProps) {
   ]);
 }
 
-export { Row, Table, InfoCell, FeatureCell };
+export { Row, Table, FeatureCell };

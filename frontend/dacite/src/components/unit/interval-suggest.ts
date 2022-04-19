@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { hyperStyled } from "@macrostrat/hyper";
 import { Spinner } from "@blueprintjs/core";
 import { IntervalI } from "../../types";
-import { InfoCell } from "..";
 import pg from "../../db";
 import styles from "../comp.module.scss";
 import { MySuggest } from "../suggest";
+import { FeatureCell } from "../table";
 
 const h = hyperStyled(styles);
 
@@ -40,10 +40,7 @@ function IntervalRow(props: IntervalRowProps) {
       });
       setIntervals(d);
     } else {
-      const { data, error } = await pg
-        .from("intervals")
-        .select()
-        .limit(50);
+      const { data, error } = await pg.from("intervals").select().limit(50);
       const d = data?.map((d: IntervalI) => {
         return { value: d.interval_name, data: d };
       });
@@ -53,10 +50,7 @@ function IntervalRow(props: IntervalRowProps) {
 
   useEffect(() => {
     const getData = async () => {
-      const { data, error } = await pg
-        .from("intervals")
-        .select()
-        .limit(50);
+      const { data, error } = await pg.from("intervals").select().limit(50);
       const d = data?.map((d: IntervalI) => {
         return { value: d.interval_name, data: d };
       });
@@ -70,8 +64,7 @@ function IntervalRow(props: IntervalRowProps) {
   const ageLabel: string = props.bottom ? "Age Bottom: " : "Age Top: ";
 
   return h(React.Fragment, [
-    h(InfoCell, { text: label }),
-    h("td", [
+    h(FeatureCell, { text: label }, [
       h.if(intervals == undefined)(Spinner),
       h.if(intervals != undefined)(MySuggest, {
         items: intervals,
@@ -80,8 +73,9 @@ function IntervalRow(props: IntervalRowProps) {
         initialSelected: props.initialSelected,
       }),
     ]),
-    h(InfoCell, { text: ageLabel }),
-    h("td", [props.age_bottom || props.age_top, " ma"]),
+    h(FeatureCell, { text: ageLabel }, [
+      (props.age_bottom || props.age_top, " ma"),
+    ]),
   ]);
 }
 

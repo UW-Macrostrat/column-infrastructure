@@ -9,7 +9,8 @@ import {
 } from "@macrostrat/ui-components/lib/esm";
 import styles from "../comp.module.scss";
 import { RefI } from "../../types";
-import { InfoCell, SubmitButton } from "..";
+import {  SubmitButton } from "..";
+import { FeatureCell } from "../table";
 
 const h = hyperStyled(styles);
 
@@ -31,16 +32,14 @@ function RefEdit() {
     h(Table, { interactive: false }, [
       h("tbody", [
         h("tr", [
-          h(InfoCell, { text: "Author" }),
-          h("td", [
+          h(FeatureCell, { text: "Author" }, [
             h(InputGroup, {
               style: { width: "200px" },
               defaultValue: model.author || undefined,
               onChange: (e) => updateRef("author", e.target.value),
             }),
           ]),
-          h(InfoCell, { text: "Pub Year" }),
-          h("td", [
+          h(FeatureCell, { text: "Pub Year" }, [
             h(NumericInput, {
               style: { width: "200px" },
               defaultValue: model.pub_year || undefined,
@@ -49,22 +48,19 @@ function RefEdit() {
           ]),
         ]),
         h("tr", [
-          h(InfoCell, { text: "Ref" }),
-          h("td", { colSpan: 3 }, [
+          h(FeatureCell, { text: "Ref", colSpan: 3 }, [
             h(TextArea, { onChange: (e) => updateRef("ref", e.target.value) }),
           ]),
         ]),
         h("tr", [
-          h(InfoCell, { text: "DOI" }),
-          h("td", [
+          h(FeatureCell, { text: "DOI" }, [
             h(InputGroup, {
               style: { width: "200px" },
               defaultValue: model.doi || undefined,
               onChange: (e) => updateRef("doi", e.target.value),
             }),
           ]),
-          h(InfoCell, { text: "URL" }),
-          h("td", [
+          h(FeatureCell, { text: "URL" }, [
             h(InputGroup, {
               style: { width: "200px" },
               defaultValue: model.url || undefined,

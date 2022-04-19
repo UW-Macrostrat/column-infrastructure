@@ -25,7 +25,6 @@ import {
 import styles from "../comp.module.scss";
 import {
   EnvTagsAdd,
-  InfoCell,
   LithTagsAdd,
   StratNameDataI,
   StratNameSuggest,
