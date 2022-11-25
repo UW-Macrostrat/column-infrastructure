@@ -1,5 +1,5 @@
 [submodule "dacite/deps/ui-components"]
-	path = dacite/deps/ui-components
+	path = dacite/deps/web-components
 	url = https://github.com/UW-Macrostrat/ui-components.git
 [submodule "BirdsEye"]
 	path = BirdsEye
