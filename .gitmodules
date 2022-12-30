@@ -1,6 +1,6 @@
-[submodule "dacite/deps/ui-components"]
-	path = dacite/deps/ui-components
-	url = https://github.com/UW-Macrostrat/ui-components.git
 [submodule "BirdsEye"]
 	path = BirdsEye
 	url = https://github.com/Idzikowski-Casey/BirdsEye.git
+[submodule "dacite/deps/web-components"]
+	path = dacite/deps/web-components
+	url = https://github.com/UW-Macrostrat/web-components.git
