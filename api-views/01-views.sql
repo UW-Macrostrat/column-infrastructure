@@ -54,6 +54,9 @@ SELECT * FROM macrostrat.sections;
 CREATE OR REPLACE VIEW macrostrat_api.strat_names AS
 SELECT * FROM macrostrat.strat_names;
 
+CREATE OR REPLACE VIEW macrostrat_api.unit_strat_names AS
+SELECT * FROM macrostrat.unit_strat_names;
+
 CREATE OR REPLACE VIEW macrostrat_api.strat_names_ref AS
 SELECT 
 s.id, 
@@ -120,20 +123,23 @@ l.lith_group,
 l.lith_type,
 l.lith_class, 
 l.lith_color,
+ul.dom,
 ul.prop,
 ul.mod_prop,
 ul.comp_prop, 
 ul.ref_id,
 ul.unit_id 
-from macrostrat.unit_liths ul
-JOIN macrostrat.liths l
+from macrostrat.liths l
+JOIN macrostrat.unit_liths ul
 ON ul.lith_id = l.id;
 
 /*LO is top and FO is bottom*/
 CREATE OR REPLACE VIEW macrostrat_api.unit_strat_name_expanded AS
-SELECT u.id,
-u.strat_name AS unit_strat_name,
-u.strat_name_id,
+SELECT 
+usn.id,
+usn.unit_id,
+usn.strat_name_id,
+sn.strat_name,
 u.color,
 u.outcrop,
 u.fo,
@@ -149,11 +155,13 @@ fo.interval_name AS name_fo,
 fo.age_bottom,
 lo.interval_name AS name_lo,
 lo.age_top
-FROM macrostrat.units u
-    LEFT JOIN macrostrat.intervals fo ON u.fo = fo.id
-    LEFT JOIN macrostrat.intervals lo ON u.lo = lo.id
-    LEFT JOIN macrostrat.strat_names s ON u.strat_name_id = s.id;
-
+FROM macrostrat.unit_strat_names usn
+JOIN macrostrat.units u
+  ON u.id = usn.unit_id
+LEFT JOIN macrostrat.strat_names sn
+  ON usn.strat_name_id = sn.id
+LEFT JOIN macrostrat.intervals fo ON u.fo = fo.id
+LEFT JOIN macrostrat.intervals lo ON u.lo = lo.id;
 
 CREATE OR REPLACE VIEW macrostrat_api.col_sections AS
 SELECT c.id col_id, c.col_name, u.section_id, u.position_top, u.position_bottom, fo.interval_name bottom, 
@@ -188,3 +196,6 @@ ON cr.ref_id = r.id;
 
 CREATE OR REPLACE VIEW macrostrat_api.strat_names_meta AS
 SELECT * FROM macrostrat.strat_names_meta;
+
+CREATE OR REPLACE VIEW macrostrat_api.unit_boundaries AS
+SELECT * FROM macrostrat.unit_boundaries;
