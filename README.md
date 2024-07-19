@@ -1,5 +1,12 @@
 # Stratigraphic Column Data Infrastructure
 
+As of 2024, development of this application has been moved into the Macrostrat v2 system.
+
+- Backend components have been integrated into the [`UW-Macrostrat/macrostrat`](https://github.com/UW-Macrostrat/macrostrat) repository
+- Frontend components (the Dacite web app) have been integrated into the [`UW-Macrostrat/web`](https://github.com/UW-Macrostrat/web) repository
+
+This application is considered a legacy component and has been archived.
+
 ## About
 
 This application aims to be the next step in data aquistion for stratigraphic columns in macrostrat. The approach taken here is PostgreSQL db centered, the exposed restful api is postgrest, which exists in the application as a docker container (see `docker-compose.yaml`).
